@@ -14,17 +14,18 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
 :root{
-  --bg:#f6f7fb; --surface:#ffffff; --ink:#14142b; --muted:#6b7280;
-  --brand:#5b5bf5; --brand-dark:#4340e0; --brand-soft:#eeecff;
+  --bg:#1339d3; --surface:#f5f1f1; --ink:#14142b; --muted:#6b7280;
+  --brand:#5b5bf5; --brand-dark:#4340e0; --brand-soft:#d4d4d4;
   --accent:#ff5470; --green:#12b981; --border:#e8e8f2;
   --radius:16px;
-  --shadow-sm:0 1px 2px rgba(20,20,43,.05);
+  --shadow-sm:0 1px 2px rgba(20,20,43,.08);
   --shadow-md:0 8px 24px rgba(20,20,43,.08);
   --shadow-lg:0 24px 60px rgba(20,20,43,.18);
-}
+} 
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
@@ -34,23 +35,23 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,select{font-family:inherit}
 
 /* ---------- HEADER ---------- */
-.site-head{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--border)}
+.site-head{position:sticky;top:0;z-index:50;background:rgba(185, 220, 231, 0.82);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:0px solid var(--border)}
 .head-inner{max-width:1140px;margin:0 auto;padding:14px 22px;
-  display:flex;align-items:center;justify-content:space-between;gap:20px}
+  display:flex;align-items:center;justify-content:space-between;gap:5px}
 .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.18rem;letter-spacing:-.02em}
 .logo-mark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--brand),#a855f7);
-  box-shadow:0 6px 16px rgba(91,91,245,.35)}
+  background:linear-gradient(135deg,var(--brand),#9653d4);
+  box-shadow:0 6px 16px rgba(163, 35, 35, 0.35)}
 .logo-mark svg{width:18px;height:18px}
 .logo span b{color:var(--brand)}
-.nav{display:flex;align-items:center;gap:26px}
+.nav{display:flex;align-items:center;gap:50px}
 .nav a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .18s}
 .nav a:hover{color:var(--ink)}
-.nav .cta{background:var(--ink);color:#fff;padding:9px 18px;border-radius:10px;
+.nav .cta{background:var(--ink);color:#f0eff3;padding:9px 18px;border-radius:50px;
   font-size:.86rem;font-weight:600;transition:.18s}
-.nav .cta:hover{background:var(--brand);color:#fff}
+.nav .cta:hover{background:var(--brand);color:#eee7e7}
 
 /* ---------- HERO ---------- */
 .hero{max-width:1140px;margin:0 auto;padding:76px 22px 46px;text-align:center}
@@ -58,7 +59,7 @@ input,select{font-family:inherit}
   color:var(--brand-dark);padding:6px 14px;border-radius:99px;font-size:.78rem;
   font-weight:600;margin-bottom:22px}
 .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green);
-  box-shadow:0 0 0 3px rgba(18,185,129,.18)}
+  box-shadow:0 0 0 3px rgba(5, 180, 122, 0.18)}
 .hero h1{font-size:clamp(2.1rem,5.2vw,3.5rem);font-weight:800;letter-spacing:-.035em;
   line-height:1.1;margin-bottom:18px}
 .hero h1 em{font-style:normal;
@@ -73,9 +74,9 @@ input,select{font-family:inherit}
   padding:26px 24px 24px;text-align:left;position:relative;overflow:hidden;
   transition:transform .2s cubic-bezier(.2,.7,.3,1),box-shadow .2s,border-color .2s;
   box-shadow:var(--shadow-sm)}
-.tool:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:#dcdcf0}
+.tool:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:#0000d3}
 .tool::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(140deg,var(--tc,#5b5bf5) 0%,transparent 42%);opacity:.06}
+  background:linear-gradient(140deg,var(--tc,#6666d6) 0%,transparent 100%);opacity:.06}
 .tool-ico{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;
   background:var(--tbg);color:var(--tc);margin-bottom:16px}
 .tool-ico svg{width:23px;height:23px}
@@ -92,7 +93,7 @@ input,select{font-family:inherit}
 .site-foot a:hover{color:var(--brand)}
 
 /* ---------- OVERLAY / WORKSPACE ---------- */
-.overlay{position:fixed;inset:0;z-index:200;background:rgba(16,16,38,.55);
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(59, 139, 214, 0.55);
   backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
   display:flex;align-items:flex-start;justify-content:center;
   padding:28px 16px;overflow-y:auto;animation:fade .18s ease}
@@ -195,7 +196,7 @@ code{background:#f1f1f8;padding:1px 6px;border-radius:5px;font-size:.78rem;color
 .pv-img{background:#fff;border-radius:8px;padding:8px;display:grid;place-items:center;
   min-height:140px;border:1px dashed #e0e0ee;overflow:hidden}
 .pv-img img{max-width:100%;max-height:170px;border-radius:4px;display:block;
-  box-shadow:0 2px 8px rgba(20,20,43,.06)}
+  box-shadow:0 2px 8px rgba(230, 230, 235, 0.06)}
 .pv-info{font-size:.72rem;color:var(--muted);margin-top:9px;font-weight:500;line-height:1.4}
 .pv-info b{color:var(--ink);font-weight:700;display:block;font-size:.78rem;margin-bottom:2px}
 
@@ -259,7 +260,7 @@ code{background:#f1f1f8;padding:1px 6px;border-radius:5px;font-size:.78rem;color
 .foot-about h3{font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:8px;letter-spacing:-.02em}
 .foot-about p{font-size:.85rem;line-height:1.65;color:var(--muted)}
 
-.foot-contact{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.foot-contact{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin-bottom:22px}
 .foot-contact a{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-alt);color:var(--muted);text-decoration:none;font-weight:600;font-size:.8rem;transition:.25s}
 .foot-contact a:hover{transform:translateY(-3px);color:#fff;border-color:transparent}
 .foot-contact a[aria-label="Instagram"]:hover{background:linear-gradient(45deg,#f09433,#dc2743,#bc1888);box-shadow:0 6px 16px rgba(220,39,67,.35)}
@@ -275,7 +276,7 @@ code{background:#f1f1f8;padding:1px 6px;border-radius:5px;font-size:.78rem;color
   
 </style>
 </head>
-<body style="background-color: #63CEF8;">
+<body style="background-color: #2fbaf1;">
 
 <!-- ============ HEADER ============ -->
 <header class="site-head">
@@ -290,8 +291,8 @@ code{background:#f1f1f8;padding:1px 6px;border-radius:5px;font-size:.78rem;color
       <span>Tools <b>Hub</b></span>
     </div>
     <nav class="nav">
-      <a href="#tools">Tools</a>
-      <a href="#why">Why us</a>
+      <a href="#tools" class="cta">Tools</a>
+      <a href="#why" class="cta">Why us</a>
       <a href="#tools" class="cta">Get Started</a>	
     </nav>
   </div>
@@ -301,7 +302,7 @@ code{background:#f1f1f8;padding:1px 6px;border-radius:5px;font-size:.78rem;color
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="pill"><span class="dot"></span> 100% Private — Your data never leaves your device.</div>
-  <h1>Every PDF &amp; photo tool you need,<br><em>right in your browser</em></h1>
+  <h1>Every PDF &amp; photo tool you need,<br>right in your browser</h1>
   <p>Merge, split, compress, sort PDF pages by Excel list — and resize passport photos & signatures for online forms.</p>
 </section>
 
@@ -322,17 +323,17 @@ code{background:#f1f1f8;padding:1px 6px;border-radius:5px;font-size:.78rem;color
   <div class="foot-contact">
     <a href="mailto:adarsh.prajapati560462@gmail.com" aria-label="Email">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
-      Email
+      
     </a>
 
     <a href="https://www.instagram.com/adaaarsh_02?stkn=bGhkdHBhZGE4c2p1" target="_blank" aria-label="Instagram">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
-      Instagram
+
     </a>
 
     <a href="https://youtube.com/@adarsharts_1?si=Ef7dsASv7e9-Nt4H" target="_blank" aria-label="YouTube">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12z"/></svg>
-      YouTube
+      
     </a>
   </div>
 
@@ -612,7 +613,8 @@ const ICONS = {
   sequence: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="7" rx="1"/><rect x="15" y="4" width="6" height="7" rx="1"/><rect x="3" y="13" width="6" height="7" rx="1"/><rect x="15" y="13" width="6" height="7" rx="1"/><path d="M11 7.5h2M11 16.5h2"/></svg>`,
   zipSequence: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 11v2"/><path d="M12 15v2"/><path d="M12 19v.01"/></svg>`,
   excelSort: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/><path d="m16 13-3 3 3 3"/><path d="M10 16h3"/></svg>`,
-  photo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/><path d="M14 14l-3 3"/></svg>`
+  photo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/><path d="M14 14l-3 3"/></svg>`,
+  fileConverter: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/><path d="m16 10-2 2 2 2"/></svg>`
 };
 
 const TOOLS = {
@@ -742,6 +744,39 @@ const TOOLS = {
         <p class="hint" style="margin-top:6px">Any pages not matched to an ID are copied to the end of the output.</p>
       </div>
       <p class="hint">Text is extracted from each PDF page using pdf.js. IDs are matched against the page's raw text (spaces and punctuation removed for the second pass).</p>`
+  },
+  /* NEW — File Converter (PDF/Image → Excel, Word, PDF, JPG) */
+  fileConverter: {
+    name: 'File Converter',
+    tag: 'PDF / image → Excel, Word, PDF, JPG',
+    desc: 'Convert PDFs or images of tables into Excel, Word, PDF or JPG. Table data is extracted automatically using OCR.',
+    action: 'Convert Now',
+    multi: false, minFiles: 1,
+    accept: '.pdf,image/jpeg,image/png,image/webp,image/bmp,image/*,application/pdf',
+    dzTitle: 'Drop a PDF or an image with a table',
+    color: '#f59e0b', bg: '#fff5e3',
+    options: `
+      <div class="opt">
+        <label class="opt-title">Convert to</label>
+        <div class="chip-row">
+          <label class="chip"><input type="radio" name="fcFmt" value="xlsx" checked><span>📊 Excel</span></label>
+          <label class="chip"><input type="radio" name="fcFmt" value="doc"><span>📝 Word</span></label>
+          <label class="chip"><input type="radio" name="fcFmt" value="pdf"><span>📕 PDF</span></label>
+          <label class="chip"><input type="radio" name="fcFmt" value="jpg"><span>🖼️ JPG</span></label>
+        </div>
+        <p class="hint">OCR detects tables automatically. Works best on clear photos with visible grid lines.</p>
+      </div>
+      <div class="opt">
+        <label class="opt-title">Extracted data preview</label>
+        <div class="preview-grid" style="grid-template-columns:1fr">
+          <div class="pv-card">
+            <div class="pv-img" id="fcPreview" style="min-height:100px;padding:14px">
+              <span style="font-size:.72rem;color:#9ca3af">Upload & convert to see preview</span>
+            </div>
+            <div class="pv-info" id="fcPreviewInfo">—</div>
+          </div>
+        </div>
+      </div>`
   },
 
   /* Photo resize for document uploads */
@@ -1310,6 +1345,7 @@ async function run() {
     else if (key === 'sequence')    await runSequence();
     else if (key === 'zipSequence') await runZipSequence();
     else if (key === 'excelSort')   await runExcelSort();
+	else if (key === 'fileConverter') await runFileConverter();
     else if (key === 'photo')       await runPhoto();
     showProgress(100, 'Finished');
     await tick();
@@ -1876,6 +1912,436 @@ async function runExcelSort() {
   } else {
     toast(`Sorted ${matched.length} pages by “${columnName}”.`);
   }
+}
+
+/* ==========================================================================
+   TOOL 8 — FILE CONVERTER (PDF/Image → Excel, Word, PDF, JPG)
+   ========================================================================== */
+let fcWorker = null;
+
+async function fcGetWorker() {
+  if (fcWorker) return fcWorker;
+  if (typeof Tesseract === 'undefined') throw new Error('OCR library failed to load. Check your connection and refresh.');
+  showProgress(10, 'Loading OCR engine (first time only)…');
+  try {
+    fcWorker = await Tesseract.createWorker('eng');
+  } catch (e) {
+    throw new Error('Could not start OCR engine: ' + e.message);
+  }
+  return fcWorker;
+}
+
+/* ---------- image preprocessing ---------- */
+function fcPreprocess(img, maxW = 1800) {
+  const scale = Math.min(2.5, Math.max(1, maxW / img.width));
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, w, h);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, w, h);
+  return cv;
+}
+
+/* ---------- Otsu threshold ---------- */
+function fcOtsu(gray) {
+  const hist = new Array(256).fill(0);
+  for (let i = 0; i < gray.length; i++) hist[gray[i]]++;
+  const total = gray.length;
+  let sum = 0;
+  for (let i = 0; i < 256; i++) sum += i * hist[i];
+  let sumB = 0, wB = 0, max = 0, thr = 127;
+  for (let t = 0; t < 256; t++) {
+    wB += hist[t];
+    if (!wB) continue;
+    const wF = total - wB;
+    if (!wF) break;
+    sumB += t * hist[t];
+    const mB = sumB / wB;
+    const mF = (sum - sumB) / wF;
+    const between = wB * wF * (mB - mF) * (mB - mF);
+    if (between > max) { max = between; thr = t; }
+  }
+  return thr;
+}
+
+/* ---------- detect table grid ---------- */
+function fcDetectGrid(canvas) {
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const W = canvas.width, H = canvas.height;
+  const d = ctx.getImageData(0, 0, W, H).data;
+  const gray = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) {
+    gray[i] = (d[i * 4] * 0.299 + d[i * 4 + 1] * 0.587 + d[i * 4 + 2] * 0.114) | 0;
+  }
+  const thr = fcOtsu(gray);
+  const bin = new Uint8Array(W * H);
+  for (let i = 0; i < gray.length; i++) bin[i] = gray[i] < thr ? 1 : 0;
+
+  const hRaw = [];
+  for (let y = 0; y < H; y++) {
+    let c = 0;
+    const off = y * W;
+    for (let x = 0; x < W; x++) c += bin[off + x];
+    if (c > W * 0.45) hRaw.push(y);
+  }
+  const vRaw = [];
+  for (let x = 0; x < W; x++) {
+    let c = 0;
+    for (let y = 0; y < H; y++) c += bin[y * W + x];
+    if (c > H * 0.40) vRaw.push(x);
+  }
+
+  const group = (arr, gap = 3) => {
+    if (!arr.length) return [];
+    const out = [];
+    let s = arr[0], p = arr[0];
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] - p <= gap) p = arr[i];
+      else { out.push(Math.round((s + p) / 2)); s = arr[i]; p = arr[i]; }
+    }
+    out.push(Math.round((s + p) / 2));
+    return out;
+  };
+
+  return { hLines: group(hRaw), vLines: group(vRaw), W, H };
+}
+
+/* ---------- blank cell check ---------- */
+function fcIsBlank(canvas) {
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  let dark = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const g = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+    if (g < 140) dark++;
+  }
+  return dark < (canvas.width * canvas.height) / 600;
+}
+
+/* ---------- OCR one cell ---------- */
+async function fcOcrCell(cellCanvas) {
+  const w = await fcGetWorker();
+  const pad = 14;
+  const cv = document.createElement('canvas');
+  cv.width = cellCanvas.width + pad * 2;
+  cv.height = cellCanvas.height + pad * 2;
+  const c = cv.getContext('2d');
+  c.fillStyle = '#fff';
+  c.fillRect(0, 0, cv.width, cv.height);
+  c.drawImage(cellCanvas, pad, pad);
+
+  const minH = 48;
+  if (cv.height < minH) {
+    const s = minH / cv.height;
+    const big = document.createElement('canvas');
+    big.width = Math.round(cv.width * s);
+    big.height = Math.round(cv.height * s);
+    const bc = big.getContext('2d');
+    bc.fillStyle = '#fff';
+    bc.fillRect(0, 0, big.width, big.height);
+    bc.imageSmoothingEnabled = true;
+    bc.drawImage(cv, 0, 0, big.width, big.height);
+    cv.width = big.width;
+    cv.height = big.height;
+    const nc = cv.getContext('2d');
+    nc.fillStyle = '#fff';
+    nc.fillRect(0, 0, cv.width, cv.height);
+    nc.drawImage(big, 0, 0);
+  }
+
+  const { data } = await w.recognize(cv);
+  let txt = (data.text || '').trim();
+  txt = txt.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (/^[|¦]+$/.test(txt)) txt = '';
+  return txt;
+}
+
+/* ---------- extract table from one canvas ---------- */
+async function fcExtractTable(canvas) {
+  const grid = fcDetectGrid(canvas);
+  const { hLines, vLines } = grid;
+
+  // fallback: no grid detected — whole-page OCR
+  if (hLines.length < 2 || vLines.length < 2) {
+    const w = await fcGetWorker();
+    const { data } = await w.recognize(canvas);
+    const lines = (data.text || '').split('\n').map(l => l.trim()).filter(Boolean);
+    return lines.map(l => l.split(/\s{2,}|\t/).map(s => s.trim()));
+  }
+
+  const nR = hLines.length - 1;
+  const nC = vLines.length - 1;
+  const table = [];
+
+  for (let r = 0; r < nR; r++) {
+    const row = [];
+    for (let c = 0; c < nC; c++) {
+      const x = vLines[c] + 2;
+      const y = hLines[r] + 2;
+      const w = vLines[c + 1] - vLines[c] - 4;
+      const h = hLines[r + 1] - hLines[r] - 4;
+      if (w < 6 || h < 6) { row.push(''); continue; }
+
+      const cc = document.createElement('canvas');
+      cc.width = w;
+      cc.height = h;
+      cc.getContext('2d').drawImage(canvas, x, y, w, h, 0, 0, w, h);
+
+      if (fcIsBlank(cc)) { row.push(''); continue; }
+      const txt = await fcOcrCell(cc);
+      row.push(txt);
+    }
+    table.push(row);
+    showProgress(30 + (r / nR) * 60, `Reading row ${r + 1} of ${nR}…`);
+  }
+  return table;
+}
+
+/* ---------- read a PDF ---------- */
+async function fcReadPDF(bytes) {
+  const pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
+  const all = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    showProgress(5 + (p / pdf.numPages) * 15, `Page ${p} of ${pdf.numPages}…`);
+    await tick();
+    const page = await pdf.getPage(p);
+    const vp = page.getViewport({ scale: 2 });
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(vp.width);
+    cv.height = Math.round(vp.height);
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    const t = await fcExtractTable(cv);
+    if (p > 1) t.shift();
+    all.push(...t);
+  }
+  pdf.destroy();
+  return all;
+}
+
+/* ---------- read an image ---------- */
+function fcLoadImg(bytes) {
+  return new Promise((res, rej) => {
+    const u = URL.createObjectURL(new Blob([bytes]));
+    const im = new Image();
+    im.onload = () => { URL.revokeObjectURL(u); res(im); };
+    im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('Cannot read image')); };
+    im.src = u;
+  });
+}
+
+async function fcReadImage(bytes) {
+  showProgress(8, 'Loading image…');
+  const img = await fcLoadImg(bytes);
+  const cv = fcPreprocess(img, 1800);
+  showProgress(20, 'Detecting table…');
+  return await fcExtractTable(cv);
+}
+
+/* ---------- number helper ---------- */
+function fcNum(str) {
+  if (str == null) return '';
+  const s = String(str).trim();
+  if (!s) return '';
+  if (/^0\d+$/.test(s)) return s;
+  const c = s.replace(/,/g, '');
+  if (/^-?\d+(\.\d+)?$/.test(c) && c.length <= 15) {
+    const n = +c;
+    if (!isNaN(n)) return n;
+  }
+  return s;
+}
+
+/* ---------- preview table ---------- */
+function fcPreviewTable(rows, cols) {
+  const box = $('#fcPreview');
+  const info = $('#fcPreviewInfo');
+  if (!box) return;
+  let h = '<table style="width:100%;border-collapse:collapse;font-size:.72rem">';
+  h += '<thead><tr>';
+  for (let c = 0; c < cols; c++) {
+    h += `<th style="border:1px solid var(--border);padding:4px 6px;background:#f1f1f8;font-weight:700">Col ${c + 1}</th>`;
+  }
+  h += '</tr></thead><tbody>';
+  rows.slice(0, 20).forEach(r => {
+    h += '<tr>';
+    for (let c = 0; c < cols; c++) {
+      const val = String(r[c] || '').replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
+      h += `<td style="border:1px solid var(--border);padding:4px 6px">${val}</td>`;
+    }
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  box.innerHTML = h;
+  if (info) info.innerHTML = `<b>Preview</b>${rows.length} row${rows.length === 1 ? '' : 's'} × ${cols} column${cols === 1 ? '' : 's'}`;
+}
+
+/* ---------- exporters ---------- */
+function fcExportXLSX(rows, cols, baseName) {
+  const aoa = rows.map(r => {
+    const a = r.slice();
+    while (a.length < cols) a.push('');
+    return a.map(fcNum);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = Array.from({ length: cols }, (_, c) => {
+    let w = 8;
+    aoa.forEach(r => { if (r[c] !== '' && r[c] != null) w = Math.max(w, Math.min(55, String(r[c]).length + 2)); });
+    return { wch: w };
+  });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  return {
+    blob: new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+    name: baseName + '.xlsx'
+  };
+}
+
+function fcExportWord(rows, cols, baseName) {
+  const esc = s => String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  let html = '<html xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>' + esc(baseName) + '</title>';
+  html += '<style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:6px 8px}th{background:#eee;font-weight:bold}</style></head><body>';
+  html += '<h2>' + esc(baseName) + '</h2><table>';
+  html += '<tr>' + Array.from({ length: cols }, (_, c) => '<th>Col ' + (c + 1) + '</th>').join('') + '</tr>';
+  rows.forEach(r => {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) html += '<td>' + esc(r[c] || '') + '</td>';
+    html += '</tr>';
+  });
+  html += '</table></body></html>';
+  return {
+    blob: new Blob(['\ufeff' + html], { type: 'application/msword' }),
+    name: baseName + '.doc'
+  };
+}
+
+function fcExportPDF(rows, cols, baseName) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
+  const M = 40;
+  let y = M;
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  const fs = 9, lh = fs * 1.35;
+  const avail = pw - M * 2;
+  const colW = Math.max(40, Math.min(160, avail / cols));
+  doc.setFontSize(14);
+  doc.text(baseName, M, y);
+  y += 22;
+  doc.setFontSize(fs);
+  rows.forEach(r => {
+    if (y + lh > ph - M) { doc.addPage(); y = M; }
+    let x = M;
+    for (let c = 0; c < cols; c++) {
+      const txt = String(r[c] || '');
+      const lines = doc.splitTextToSize(txt, colW - 6);
+      doc.text(lines, x, y, { maxWidth: colW - 6 });
+      x += colW;
+      if (x > pw - M) break;
+    }
+    doc.setDrawColor(230);
+    doc.line(M, y + 4, pw - M, y + 4);
+    y += lh;
+  });
+  return { blob: doc.output('blob'), name: baseName + '.pdf' };
+}
+
+function fcExportJPG(rows, cols, baseName) {
+  return new Promise((resolve) => {
+    const pad = 40, rowH = 36, fs = 18;
+    const colW = Math.max(90, (1400 - pad * 2) / cols);
+    const W = pad * 2 + colW * cols;
+    const H = pad * 2 + 60 + (rows.length + 1) * rowH;
+    const cv = document.createElement('canvas');
+    cv.width = W;
+    cv.height = H;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 26px Arial';
+    ctx.fillText(baseName, pad, pad + 20);
+    const top = pad + 60;
+    ctx.fillStyle = '#e5e7eb';
+    ctx.fillRect(pad, top, W - pad * 2, rowH);
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold ' + fs + 'px Arial';
+    for (let c = 0; c < cols; c++) ctx.fillText('Col ' + (c + 1), pad + c * colW + 8, top + 24);
+    ctx.font = fs + 'px Arial';
+    rows.forEach((r, ri) => {
+      const y = top + (ri + 1) * rowH;
+      ctx.fillStyle = ri % 2 ? '#fafafa' : '#fff';
+      ctx.fillRect(pad, y, W - pad * 2, rowH);
+      ctx.strokeStyle = '#ddd';
+      ctx.strokeRect(pad, y, W - pad * 2, rowH);
+      ctx.fillStyle = '#111';
+      for (let c = 0; c < cols; c++) {
+        const t = String(r[c] || '');
+        const maxChars = Math.floor(colW / 10);
+        const short = t.length > maxChars ? t.slice(0, maxChars - 1) + '…' : t;
+        ctx.fillText(short, pad + c * colW + 8, y + 24);
+      }
+    });
+    cv.toBlob(b => resolve({ blob: b, name: baseName + '.jpg' }), 'image/jpeg', 0.92);
+  });
+}
+
+/* ---------- main ---------- */
+async function runFileConverter() {
+  if (!pdfjsReady) throw new Error('PDF renderer failed to load.');
+  if (!xlsxReady) throw new Error('Excel library failed to load.');
+  if (typeof Tesseract === 'undefined') throw new Error('OCR library failed to load. Check your connection and refresh.');
+
+  const item = state.items[0];
+  const fmt = $('input[name="fcFmt"]:checked').value;
+  const baseName = item.name.replace(/\.[^.]+$/, '') || 'converted';
+
+  const isPdf = isPdfFile(item.name, '') || item.name.toLowerCase().endsWith('.pdf');
+  let rows;
+
+  if (isPdf) {
+    showProgress(3, 'Reading PDF…');
+    rows = await fcReadPDF(item.bytes);
+  } else {
+    rows = await fcReadImage(item.bytes);
+  }
+
+  if (!rows.length) {
+    throw new Error('No table detected. Try a clearer image, or a screenshot of a table with visible grid lines.');
+  }
+
+  // normalize
+  const cols = rows.reduce((m, r) => Math.max(m, r.length), 0);
+  rows = rows.map(r => { const a = r.slice(); while (a.length < cols) a.push(''); return a; });
+  rows = rows.filter(r => r.some(c => c !== ''));
+
+  if (!rows.length) throw new Error('Table was detected but no readable text was found.');
+
+  showProgress(96, 'Previewing…');
+  fcPreviewTable(rows, cols);
+
+  showProgress(98, 'Creating file…');
+
+  let out;
+  if (fmt === 'xlsx')      out = fcExportXLSX(rows, cols, baseName);
+  else if (fmt === 'doc')  out = fcExportWord(rows, cols, baseName);
+  else if (fmt === 'pdf')  out = fcExportPDF(rows, cols, baseName);
+  else                     out = await fcExportJPG(rows, cols, baseName);
+
+  state.outputs = [{ name: out.name, bytes: new Uint8Array(await out.blob.arrayBuffer()), mime: out.blob.type }];
+
+  const extLabel = fmt === 'xlsx' ? 'Excel' : fmt === 'doc' ? 'Word' : fmt === 'pdf' ? 'PDF' : 'JPG';
+  const sub = `${out.name} · ${rows.length} row${rows.length === 1 ? '' : 's'} × ${cols} column${cols === 1 ? '' : 's'} · ${fmtSize(out.blob.size)}`;
+
+  showResult(`Your ${extLabel} file is ready`, sub, `Download ${extLabel}`);
 }
 
 /* ==========================================================================
