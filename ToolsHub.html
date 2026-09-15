@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tools Hub Powered by Adarsh</title>
+<meta name="description" content="Free online PDF & photo tools. Merge, split, compress, sort PDFs by Excel, resize photos for form uploads — all in your browser.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --ink:#14142b; --muted:#6b7280;
+  --brand:#5b5bf5; --brand-dark:#4340e0; --brand-soft:#eeecff;
+  --accent:#ff5470; --green:#12b981; --border:#e8e8f2;
+  --radius:16px;
+  --shadow-sm:0 1px 2px rgba(20,20,43,.05);
+  --shadow-md:0 8px 24px rgba(20,20,43,.08);
+  --shadow-lg:0 24px 60px rgba(20,20,43,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55}
+img,svg{display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select{font-family:inherit}
+
+/* ---------- HEADER ---------- */
+.site-head{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border)}
+.head-inner{max-width:1140px;margin:0 auto;padding:14px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.18rem;letter-spacing:-.02em}
+.logo-mark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--brand),#a855f7);
+  box-shadow:0 6px 16px rgba(91,91,245,.35)}
+.logo-mark svg{width:18px;height:18px}
+.logo span b{color:var(--brand)}
+.nav{display:flex;align-items:center;gap:26px}
+.nav a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .18s}
+.nav a:hover{color:var(--ink)}
+.nav .cta{background:var(--ink);color:#fff;padding:9px 18px;border-radius:10px;
+  font-size:.86rem;font-weight:600;transition:.18s}
+.nav .cta:hover{background:var(--brand);color:#fff}
+
+/* ---------- HERO ---------- */
+.hero{max-width:1140px;margin:0 auto;padding:76px 22px 46px;text-align:center}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--brand-soft);
+  color:var(--brand-dark);padding:6px 14px;border-radius:99px;font-size:.78rem;
+  font-weight:600;margin-bottom:22px}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 0 3px rgba(18,185,129,.18)}
+.hero h1{font-size:clamp(2.1rem,5.2vw,3.5rem);font-weight:800;letter-spacing:-.035em;
+  line-height:1.1;margin-bottom:18px}
+.hero h1 em{font-style:normal;
+  background:linear-gradient(120deg,var(--brand),#a855f7 55%,var(--accent));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:640px;margin:0 auto}
+
+/* ---------- TOOLS ---------- */
+.tools{max-width:1140px;margin:0 auto;padding:26px 22px 70px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.tool{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:26px 24px 24px;text-align:left;position:relative;overflow:hidden;
+  transition:transform .2s cubic-bezier(.2,.7,.3,1),box-shadow .2s,border-color .2s;
+  box-shadow:var(--shadow-sm)}
+.tool:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:#dcdcf0}
+.tool::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(140deg,var(--tc,#5b5bf5) 0%,transparent 42%);opacity:.06}
+.tool-ico{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;
+  background:var(--tbg);color:var(--tc);margin-bottom:16px}
+.tool-ico svg{width:23px;height:23px}
+.tool h3{font-size:1.06rem;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+.tool p{font-size:.87rem;color:var(--muted);line-height:1.5}
+.tool .arrow{margin-top:16px;font-size:.82rem;font-weight:600;color:var(--tc);
+  display:flex;align-items:center;gap:6px;opacity:.75;transition:.2s}
+.tool:hover .arrow{opacity:1;gap:10px}
+
+/* ---------- FOOTER ---------- */
+.site-foot{padding:44px 22px;text-align:center;color:var(--muted);font-size:.82rem}
+.site-foot .fl{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:16px}
+.site-foot a{color:var(--muted);text-decoration:none}
+.site-foot a:hover{color:var(--brand)}
+
+/* ---------- OVERLAY / WORKSPACE ---------- */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(16,16,38,.55);
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:28px 16px;overflow-y:auto;animation:fade .18s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.overlay[hidden]{display:none}
+
+.workspace{background:var(--surface);width:100%;max-width:760px;border-radius:20px;
+  box-shadow:var(--shadow-lg);display:flex;flex-direction:column;
+  max-height:calc(100vh - 56px);overflow:hidden;
+  animation:pop .22s cubic-bezier(.2,.8,.3,1)}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+
+.ws-head{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:20px 22px;border-bottom:1px solid var(--border)}
+.ws-title{display:flex;align-items:center;gap:13px;min-width:0}
+.ws-title .tool-ico{margin:0;width:40px;height:40px;border-radius:11px}
+.ws-title .tool-ico svg{width:19px;height:19px}
+.ws-title h2{font-size:1.06rem;font-weight:700;letter-spacing:-.01em}
+.ws-title p{font-size:.79rem;color:var(--muted);margin-top:1px}
+.icon-btn{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+  color:var(--muted);font-size:1.05rem;transition:.16s;flex:none}
+.icon-btn:hover{background:#f1f1f8;color:var(--ink)}
+
+.ws-body{padding:22px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:18px}
+
+/* dropzone */
+.dropzone{border:2px dashed #d5d5e8;border-radius:14px;padding:34px 22px;text-align:center;
+  transition:.18s;background:#fbfbfe;cursor:pointer}
+.dropzone:hover,.dropzone.over{border-color:var(--brand);background:var(--brand-soft)}
+.dropzone .dz-ico{width:52px;height:52px;border-radius:14px;margin:0 auto 14px;
+  background:var(--brand-soft);color:var(--brand);display:grid;place-items:center}
+.dropzone .dz-ico svg{width:24px;height:24px}
+.dropzone strong{display:block;font-size:.96rem;font-weight:700;margin-bottom:4px}
+.dropzone span{font-size:.83rem;color:var(--muted)}
+.dropzone .browse{color:var(--brand);font-weight:600;text-decoration:underline}
+
+/* file list */
+.filelist{display:flex;flex-direction:column;gap:9px}
+.filelist:empty{display:none}
+.file-row{display:flex;align-items:center;gap:12px;padding:11px 13px;
+  border:1px solid var(--border);border-radius:12px;background:#fcfcff;transition:.16s}
+.file-row.dragging{opacity:.35}
+.file-row.over{border-color:var(--brand);background:var(--brand-soft)}
+.grip{color:#c3c3d8;cursor:grab;flex:none;display:grid;place-items:center;padding:2px}
+.grip:active{cursor:grabbing}
+.grip svg{width:14px;height:14px}
+.file-ico{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;
+  background:#ffeef1;color:var(--accent);font-size:.58rem;font-weight:800;letter-spacing:.02em}
+.file-ico.zip{background:#f3eeff;color:#8b5cf6}
+.file-ico.img{background:#e0f5ff;color:#0ea5e9}
+.file-ico.sheet{background:#e6f7e0;color:#16a34a}
+.file-meta{min-width:0;flex:1}
+.file-meta .nm{font-size:.86rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-meta .sub{font-size:.75rem;color:var(--muted);margin-top:1px}
+.file-row .rm{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+  color:#b6b6cc;font-size:1rem;flex:none;transition:.15s}
+.file-row .rm:hover{background:#ffe8ec;color:var(--accent)}
+
+/* options */
+.options{display:flex;flex-direction:column;gap:16px}
+.options:empty{display:none}
+.opt-title{font-size:.82rem;font-weight:700;display:block;margin-bottom:9px;letter-spacing:-.005em}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;
+  border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:.16s;background:#fcfcff}
+.choice:hover{border-color:#c9c9e6}
+.choice input{margin-top:3px;accent-color:var(--brand);width:15px;height:15px;flex:none;cursor:pointer}
+.choice b{font-size:.87rem;font-weight:600;display:block}
+.choice small{font-size:.76rem;color:var(--muted)}
+.choice:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}
+.text-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:11px;
+  font-size:.88rem;outline:none;transition:.16s;background:#fcfcff;color:var(--ink)}
+.text-input:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(91,91,245,.12)}
+.text-input:disabled{opacity:.5;cursor:not-allowed}
+select.text-input{appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.hint{font-size:.75rem;color:var(--muted);margin-top:7px}
+.checkline{display:flex;align-items:center;gap:10px;font-size:.85rem;cursor:pointer;font-weight:500}
+.checkline input{accent-color:var(--brand);width:15px;height:15px;cursor:pointer}
+code{background:#f1f1f8;padding:1px 6px;border-radius:5px;font-size:.78rem;color:var(--brand-dark)}
+
+/* dimension row */
+.dim-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dfield label{display:block;font-size:.72rem;color:var(--muted);font-weight:600;margin-bottom:4px;letter-spacing:.02em;text-transform:uppercase}
+
+/* chips */
+.chip-row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;
+  border:1.5px solid var(--border);border-radius:10px;cursor:pointer;
+  font-size:.82rem;font-weight:600;background:#fcfcff;transition:.16s}
+.chip input{accent-color:var(--brand);width:14px;height:14px;cursor:pointer}
+.chip:has(input:checked){border-color:var(--brand);background:var(--brand-soft);color:var(--brand-dark)}
+.chip.swatch{padding:6px 10px 6px 6px}
+.chip.swatch .sw{width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,.08);flex:none}
+
+/* preview */
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pv-card{background:#fbfbfe;border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}
+.pv-img{background:#fff;border-radius:8px;padding:8px;display:grid;place-items:center;
+  min-height:140px;border:1px dashed #e0e0ee;overflow:hidden}
+.pv-img img{max-width:100%;max-height:170px;border-radius:4px;display:block;
+  box-shadow:0 2px 8px rgba(20,20,43,.06)}
+.pv-info{font-size:.72rem;color:var(--muted);margin-top:9px;font-weight:500;line-height:1.4}
+.pv-info b{color:var(--ink);font-weight:700;display:block;font-size:.78rem;margin-bottom:2px}
+
+/* progress */
+.progress{display:flex;flex-direction:column;gap:9px}
+.progress[hidden]{display:none}
+.bar-track{height:7px;border-radius:99px;background:#ececf6;overflow:hidden}
+.bar-fill{height:100%;width:0%;border-radius:99px;
+  background:linear-gradient(90deg,var(--brand),#a855f7);transition:width .25s ease}
+.ptext{font-size:.79rem;color:var(--muted);display:flex;justify-content:space-between;gap:12px}
+.ptext .pct{font-weight:700;color:var(--brand)}
+
+/* result */
+.result{border:1.5px solid #c9f0e0;background:#f2fdf8;border-radius:14px;padding:16px;
+  display:flex;align-items:center;gap:14px}
+.result[hidden]{display:none}
+.rc-icon{width:40px;height:40px;border-radius:11px;background:var(--green);color:#fff;
+  display:grid;place-items:center;flex:none;font-size:1.1rem;font-weight:700}
+.rc-body{flex:1;min-width:0}
+.rc-body h3{font-size:.93rem;font-weight:700}
+.rc-body p{font-size:.79rem;color:#3d7a63;margin-top:2px;word-break:break-word}
+.rc-body .save{color:var(--green);font-weight:700}
+
+/* footer */
+.ws-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:16px 22px;border-top:1px solid var(--border);background:#fcfcff}
+.btn{border-radius:11px;font-weight:600;font-size:.88rem;padding:11px 22px;
+  transition:.18s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn.primary{background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(91,91,245,.28)}
+.btn.primary:hover:not(:disabled){background:var(--brand-dark);transform:translateY(-1px)}
+.btn.primary:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+.btn.ghost{color:var(--muted);border:1.5px solid var(--border);background:#fff}
+.btn.ghost:hover{color:var(--ink);border-color:#cfcfe6}
+.btn.green{background:var(--green);color:#fff;box-shadow:0 6px 16px rgba(18,185,129,.28)}
+.btn.green:hover{filter:brightness(1.05);transform:translateY(-1px)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,80px);
+  background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;
+  font-size:.85rem;font-weight:500;z-index:400;opacity:0;
+  transition:.28s cubic-bezier(.2,.8,.3,1);box-shadow:var(--shadow-lg);
+  max-width:90vw;text-align:center}
+.toast.show{transform:translate(-50%,0);opacity:1}
+.toast.err{background:#e11d48}
+
+@media(max-width:640px){
+  .nav a:not(.cta){display:none}
+  .hero{padding:52px 18px 30px}
+  .tools{padding:18px 18px 54px}
+  .ws-foot{flex-direction:column-reverse}
+  .ws-foot .btn{width:100%}
+  .ws-body{padding:18px}
+  .overlay{padding:12px 10px}
+  .workspace{max-height:calc(100vh - 24px);border-radius:16px}
+  .preview-grid{grid-template-columns:1fr}
+  .dim-row{grid-template-columns:1fr 1fr}
+}
+.site-foot{padding:44px 22px 28px;text-align:center;color:var(--muted);font-size:.83rem;border-top:1px solid var(--border);background:var(--surface)}
+
+.foot-about{max-width:520px;margin:0 auto 22px}
+.foot-about h3{font-size:1.05rem;font-weight:800;color:var(--ink);margin-bottom:8px;letter-spacing:-.02em}
+.foot-about p{font-size:.85rem;line-height:1.65;color:var(--muted)}
+
+.foot-contact{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.foot-contact a{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-alt);color:var(--muted);text-decoration:none;font-weight:600;font-size:.8rem;transition:.25s}
+.foot-contact a:hover{transform:translateY(-3px);color:#fff;border-color:transparent}
+.foot-contact a[aria-label="Instagram"]:hover{background:linear-gradient(45deg,#f09433,#dc2743,#bc1888);box-shadow:0 6px 16px rgba(220,39,67,.35)}
+.foot-contact a[aria-label="YouTube"]:hover{background:#ff0000;box-shadow:0 6px 16px rgba(255,0,0,.35)}
+.foot-contact a[aria-label="Email"]:hover{background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 6px 16px rgba(99,102,241,.35)}
+.foot-contact svg{width:15px;height:15px;flex:none}
+
+.foot-copy{font-size:.78rem;color:var(--muted);padding-top:16px;border-top:1px solid var(--border)}
+
+@media(max-width:640px){
+  .foot-contact{flex-direction:column;align-items:center}
+  .foot-contact a{width:100%;max-width:260px;justify-content:center}
+  
+</style>
+</head>
+<body style="background-color: #63CEF8;">
+
+<!-- ============ HEADER ============ -->
+<header class="site-head">
+  <div class="head-inner">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6"/>
+        </svg>
+      </div>
+      <span>Tools <b>Hub</b></span>
+    </div>
+    <nav class="nav">
+      <a href="#tools">Tools</a>
+      <a href="#why">Why us</a>
+      <a href="#tools" class="cta">Get Started</a>	
+    </nav>
+  </div>
+</header>
+
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="pill"><span class="dot"></span> 100% Private — Your data never leaves your device.</div>
+  <h1>Every PDF &amp; photo tool you need,<br><em>right in your browser</em></h1>
+  <p>Merge, split, compress, sort PDF pages by Excel list — and resize passport photos & signatures for online forms.</p>
+</section>
+
+<!-- ============ TOOLS ============ -->
+<section class="tools" id="tools">
+  <div class="grid" id="toolGrid"></div>
+</section>
+<!-- ============ FOOTER ============ -->
+<footer class="site-foot">
+
+  <!-- ABOUT -->
+  <div class="foot-about">
+    <h3>About Me</h3>
+    <p>Hi, I'm Adarsh 👋 I'm a tech enthusiast who loves turning ideas into simple, useful, and creative digital solutions. I build tools that save time, solve problems, and make everyday work a little easier.</p>
+  </div>
+
+  <!-- CONTACT + SOCIALS -->
+  <div class="foot-contact">
+    <a href="mailto:adarsh.prajapati560462@gmail.com" aria-label="Email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+      Email
+    </a>
+
+    <a href="https://www.instagram.com/adaaarsh_02?stkn=bGhkdHBhZGE4c2p1" target="_blank" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+      Instagram
+    </a>
+
+    <a href="https://youtube.com/@adarsharts_1?si=Ef7dsASv7e9-Nt4H" target="_blank" aria-label="YouTube">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12z"/></svg>
+      YouTube
+    </a>
+  </div>
+
+  <div class="foot-copy">© <span id="yr"></span> Adarsh Tools Hub — Simple tools. Smarter work.</div>
+</footer>
+
+<!-- ============ WORKSPACE OVERLAY ============ -->
+<div class="overlay" id="overlay" hidden>
+  <div class="workspace" role="dialog" aria-modal="true">
+    <header class="ws-head">
+      <div class="ws-title">
+        <div class="tool-ico" id="wsIcon"></div>
+        <div>
+          <h2 id="wsName"></h2>
+          <p id="wsTag"></p>
+        </div>
+      </div>
+      <button class="icon-btn" id="closeWs" title="Close">✕</button>
+    </header>
+
+    <div class="ws-body">
+      <div class="dropzone" id="dropzone">
+        <div class="dz-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/>
+          </svg>
+        </div>
+        <strong id="dzTitle">Drop PDF files here</strong>
+        <span>or <span class="browse">browse your device</span></span>
+      </div>
+
+      <div class="filelist" id="filelist"></div>
+      <div class="options" id="options"></div>
+
+      <div class="progress" id="progress" hidden>
+        <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+        <div class="ptext"><span id="pLabel">Working…</span><span class="pct" id="pPct">0%</span></div>
+      </div>
+
+      <div class="result" id="result" hidden>
+        <div class="rc-icon">✓</div>
+        <div class="rc-body">
+          <h3 id="rTitle">Your file is ready</h3>
+          <p id="rSub"></p>
+        </div>
+        <button class="btn green" id="dlBtn">Download</button>
+      </div>
+    </div>
+
+    <footer class="ws-foot">
+      <button class="btn ghost" id="addMore">+ Add files</button>
+      <button class="btn primary" id="runBtn" disabled>Merge PDFs</button>
+    </footer>
+
+    <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================================
+   PDFForge — client-side PDF & image toolkit
+   ========================================================================== */
+
+const PDFLibReady = typeof PDFLib !== 'undefined';
+const pdfjsReady  = typeof pdfjsLib !== 'undefined';
+const zipReady    = typeof JSZip !== 'undefined';
+const xlsxReady   = typeof XLSX !== 'undefined';
+
+if (pdfjsReady) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+}
+
+/* ---------- tiny helpers ---------- */
+const $  = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const tick = () => new Promise(r => setTimeout(r, 0));
+const uid  = () => Math.random().toString(36).slice(2, 10);
+
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(2) + ' MB';
+}
+
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+let toastTimer;
+function toast(msg, isError = false) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.toggle('err', isError);
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3600);
+}
+
+function dataUrlToBytes(dataUrl) {
+  const base64 = dataUrl.split(',')[1];
+  const bin = atob(base64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function canvasToBlob(canvas, mime, quality) {
+  return new Promise(resolve => {
+    if (typeof canvas.toBlob === 'function') {
+      canvas.toBlob(b => resolve(b), mime, quality);
+    } else {
+      const dataUrl = canvas.toDataURL(mime, quality);
+      const bytes = dataUrlToBytes(dataUrl);
+      resolve(new Blob([bytes], { type: mime }));
+    }
+  });
+}
+
+function loadImage(bytes) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(new Blob([bytes]));
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not load the image.')); };
+    img.src = url;
+  });
+}
+
+function getImageDimensions(bytes) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(new Blob([bytes]));
+    const img = new Image();
+    img.onload = () => {
+      const dims = { w: img.naturalWidth, h: img.naturalHeight };
+      URL.revokeObjectURL(url);
+      resolve(dims);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad image')); };
+    img.src = url;
+  });
+}
+
+/* ---------- CSV parser ---------- */
+function parseCSV(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const rows = [];
+  let row = [], cur = '', inQuotes = false, i = 0;
+  while (i < text.length) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { cur += '"'; i += 2; continue; }
+        inQuotes = false; i++; continue;
+      }
+      cur += c; i++; continue;
+    }
+    if (c === '"') { inQuotes = true; i++; continue; }
+    if (c === ',') { row.push(cur); cur = ''; i++; continue; }
+    if (c === '\r') { i++; continue; }
+    if (c === '\n') { row.push(cur); cur = ''; rows.push(row); row = []; i++; continue; }
+    cur += c; i++;
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(c => c !== ''));
+}
+
+/* ---------- ZIP path helpers ---------- */
+function normalizePath(p) {
+  return String(p).replace(/\\/g, '/').replace(/^\/+/, '').replace(/\/+/g, '/');
+}
+
+function findFileInZip(zip, name) {
+  const target = normalizePath(name).toLowerCase();
+  let found = null;
+  zip.forEach((relativePath, file) => {
+    if (found || file.dir) return;
+    const norm = normalizePath(relativePath).toLowerCase();
+    if (norm === target || norm.endsWith('/' + target)) found = file;
+  });
+  return found;
+}
+
+function findZipEntry(index, path) {
+  const target = normalizePath(path).toLowerCase();
+  if (index[target]) return index[target];
+  for (const key of Object.keys(index)) if (key === target) return index[key];
+  const base = target.split('/').pop();
+  for (const key of Object.keys(index)) {
+    const kBase = key.split('/').pop();
+    if (kBase === base) return index[key];
+  }
+  return null;
+}
+
+/* ---------- accept helpers ---------- */
+function fileMatchesAccept(file, accept) {
+  const parts = accept.split(',').map(s => s.trim().toLowerCase());
+  const name = (file.name || '').toLowerCase();
+  const type = (file.type || '').toLowerCase();
+  return parts.some(p => {
+    if (!p) return false;
+    if (p.startsWith('.')) return name.endsWith(p);
+    if (p.endsWith('/*')) return type.startsWith(p.slice(0, -1));
+    return type === p;
+  });
+}
+
+function acceptLabel(accept) {
+  const parts = accept.split(',').map(s => s.trim().toLowerCase());
+  if (parts.some(p => p.includes('zip'))) return 'ZIP';
+  if (parts.some(p => p.startsWith('image/'))) return 'image';
+  return 'PDF';
+}
+
+function fileExtLabel(name) {
+  const m = /\.([a-z0-9]+)$/i.exec(name);
+  return m ? m[1].toUpperCase() : 'FILE';
+}
+
+function isImageFile(name, type) {
+  return /\.(jpe?g|png|webp|gif|bmp)$/i.test(name) ||
+         (type && type.startsWith('image/'));
+}
+
+function isPdfFile(name, type) {
+  return /\.pdf$/i.test(name) || type === 'application/pdf';
+}
+
+function isSheetFile(name) {
+  return /\.(xlsx|xls|csv)$/i.test(name);
+}
+
+/* ---------- page-range parser ---------- */
+function parseRanges(str, maxPage) {
+  const groups = [];
+  String(str).split(',').forEach(part => {
+    part = part.trim();
+    if (!part) return;
+    const range = part.match(/^(\d+)\s*[-–]\s*(\d+)$/);
+    if (range) {
+      let a = parseInt(range[1], 10), b = parseInt(range[2], 10);
+      if (a > b) [a, b] = [b, a];
+      const arr = [];
+      for (let i = a; i <= b; i++) if (i >= 1 && i <= maxPage) arr.push(i - 1);
+      if (arr.length) groups.push(arr);
+    } else if (/^\d+$/.test(part)) {
+      const n = parseInt(part, 10);
+      if (n >= 1 && n <= maxPage) groups.push([n - 1]);
+    }
+  });
+  return groups;
+}
+
+/* ==========================================================================
+   TOOL DEFINITIONS
+   ========================================================================== */
+const ICONS = {
+  merge: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M12 8v8"/><path d="M8.5 11.5 12 8l3.5 3.5"/></svg>`,
+  split: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88"/><path d="M14.47 14.48 20 20"/><path d="M8.12 8.12 12 12"/></svg>`,
+  compress: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="m14 10 7-7"/><path d="m3 21 7-7"/></svg>`,
+  sequence: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="7" rx="1"/><rect x="15" y="4" width="6" height="7" rx="1"/><rect x="3" y="13" width="6" height="7" rx="1"/><rect x="15" y="13" width="6" height="7" rx="1"/><path d="M11 7.5h2M11 16.5h2"/></svg>`,
+  zipSequence: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 11v2"/><path d="M12 15v2"/><path d="M12 19v.01"/></svg>`,
+  excelSort: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/><path d="m16 13-3 3 3 3"/><path d="M10 16h3"/></svg>`,
+  photo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/><path d="M14 14l-3 3"/></svg>`
+};
+
+const TOOLS = {
+  merge: {
+    name: 'Merge PDF',
+    tag: 'Combine PDFs in the order you want',
+    desc: 'Combine multiple PDFs into one single document. Drag the list to set the exact order.',
+    action: 'Merge PDFs',
+    multi: true, minFiles: 2,
+    accept: 'application/pdf,.pdf',
+    color: '#5b5bf5', bg: '#eeecff',
+    options: `<div class="opt"><label class="checkline"><input type="checkbox" id="mergeSort"> Sort files alphabetically before merging</label></div>`
+  },
+
+  split: {
+    name: 'Split PDF',
+    tag: 'Extract pages or cut a PDF into pieces',
+    desc: 'Split one PDF into multiple documents by ranges, by fixed page count, or extract selected pages.',
+    action: 'Split PDF',
+    multi: false, minFiles: 1,
+    accept: 'application/pdf,.pdf',
+    color: '#ff5470', bg: '#ffeef1',
+    options: `
+      <div class="opt">
+        <label class="opt-title">Split mode</label>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="splitmode" value="ranges" checked><span><b>Custom ranges</b><small>Creates one PDF per range</small></span></label>
+          <label class="choice"><input type="radio" name="splitmode" value="every"><span><b>Split every N pages</b><small>Creates fixed-size chunks</small></span></label>
+          <label class="choice"><input type="radio" name="splitmode" value="extract"><span><b>Extract pages</b><small>All selected pages into one PDF</small></span></label>
+        </div>
+      </div>
+      <div class="opt" id="optSpec">
+        <label class="opt-title" id="specLabel" for="specInput">Page ranges</label>
+        <input class="text-input" id="specInput" value="1-1" placeholder="e.g. 1-3, 5, 8-10">
+        <p class="hint" id="specHint">Separate ranges with commas. Pages are numbered from 1.</p>
+      </div>
+      <div class="opt" id="optEvery" hidden>
+        <label class="opt-title" for="everyInput">Pages per file</label>
+        <input class="text-input" id="everyInput" type="number" min="1" step="1" value="1">
+        <p class="hint">A 10-page PDF with “2” produces five files of two pages.</p>
+      </div>`
+  },
+
+  compress: {
+    name: 'Compress PDF',
+    tag: 'Shrink file size while keeping it readable',
+    desc: 'Reduce PDF size by re-rendering pages at a lower resolution and re-encoding images.',
+    action: 'Compress PDF',
+    multi: false, minFiles: 1,
+    accept: 'application/pdf,.pdf',
+    color: '#12b981', bg: '#e6faf3',
+    options: `
+      <div class="opt">
+        <label class="opt-title">Compression level</label>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="clevel" value="extreme"><span><b>Extreme compression</b><small>Smallest file · lower quality (72 dpi)</small></span></label>
+          <label class="choice"><input type="radio" name="clevel" value="recommended" checked><span><b>Recommended</b><small>Good balance · 100 dpi</small></span></label>
+          <label class="choice"><input type="radio" name="clevel" value="less"><span><b>Less compression</b><small>Best quality · 144 dpi</small></span></label>
+        </div>
+      </div>
+      <div class="opt"><label class="checkline"><input type="checkbox" id="grayChk"> Convert pages to grayscale (smaller still)</label></div>
+      <p class="hint">Note: compression rasterises pages, so selectable text becomes part of the image.</p>`
+  },
+
+	  zipSequence: {
+		name: 'Merge by CSV Sequence',
+		tag: 'Merge invoices in the exact order listed in a CSV',
+		desc: 'Upload a ZIP containing a CSV and PDF invoices. Pages are merged in the sequence defined by a CSV column.',
+		action: 'Merge by sequence',
+		multi: false, minFiles: 1,
+		accept: '.zip,application/zip',
+		color: '#8b5cf6', bg: '#f3eeff',
+		options: `
+		  <div class="opt">
+			<label class="opt-title" for="csvNameInput">CSV file name inside the ZIP</label>
+			<input class="text-input" id="csvNameInput" value="invoice_status_report.csv">
+			<p class="hint">Nested paths are fine — e.g. <code>data/report.csv</code>.</p>
+		  </div>
+		  <div class="opt">
+			<label class="opt-title" for="colNameInput">Column containing the file paths</label>
+			<input class="text-input" id="colNameInput" value="filepath">
+		  </div>
+		  <div class="opt">
+			<label class="checkline"><input type="checkbox" id="skipMissingChk" checked> Skip missing files and keep merging</label>
+			<p class="hint" style="margin-top:6px">When unchecked, the job stops at the first missing file and reports its name.</p>
+		  </div>
+		  <div class="opt">
+			<label class="checkline"><input type="checkbox" id="uniquePagesChk" checked> Avoid adding the same page twice</label>
+		  </div>
+		  <p class="hint">Paths in the CSV are resolved relative to the ZIP root. Both forward slashes and backslashes work.</p>`
+	  },
+
+  /* NEW — Sort PDF pages by Excel/CSV list (mirrors the Python script) */
+  excelSort: {
+    name: 'Sort PDF by Excel',
+    tag: 'Reorder PDF pages to match an Excel list',
+    desc: 'Upload a PDF and an Excel/CSV file. Pages are reordered so each page matches the sequence of values in your chosen column.',
+    action: 'Sort PDF pages',
+    multi: true, minFiles: 2,
+    accept: '.pdf,.xlsx,.xls,.csv,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv',
+    dzTitle: 'Drop a PDF and an Excel/CSV file here',
+    dzLabel: 'PDF + spreadsheet',
+    color: '#16a34a', bg: '#e6f7e0',
+    options: `
+      <div class="opt">
+        <label class="opt-title" for="esColumnInput">Column name in the spreadsheet</label>
+        <input class="text-input" id="esColumnInput" value="Serial_Number">
+        <p class="hint">Values in this column are searched inside each PDF page's text.</p>
+      </div>
+      <div class="opt">
+        <label class="opt-title" for="esSheetInput">Sheet name (optional)</label>
+        <input class="text-input" id="esSheetInput" placeholder="Leave blank to use the first sheet">
+      </div>
+      <div class="opt">
+        <label class="opt-title" for="esOutputInput">Output file name</label>
+        <input class="text-input" id="esOutputInput" value="Sorted_Invoices.pdf">
+      </div>
+      <div class="opt">
+        <label class="checkline"><input type="checkbox" id="esCaseInsensitive" checked> Case-insensitive matching</label>
+      </div>
+      <div class="opt">
+        <label class="checkline"><input type="checkbox" id="esSkipMissing" checked> Skip IDs not found in the PDF</label>
+        <p class="hint" style="margin-top:6px">When unchecked, the job stops at the first unmatched ID and reports it.</p>
+      </div>
+      <div class="opt">
+        <label class="checkline"><input type="checkbox" id="esAppendUnmatched"> Append remaining PDF pages at the end</label>
+        <p class="hint" style="margin-top:6px">Any pages not matched to an ID are copied to the end of the output.</p>
+      </div>
+      <p class="hint">Text is extracted from each PDF page using pdf.js. IDs are matched against the page's raw text (spaces and punctuation removed for the second pass).</p>`
+  },
+
+  /* Photo resize for document uploads */
+  photo: {
+    name: 'Photo Resize & Compress',
+    tag: 'Perfect size for online form uploads',
+    desc: 'Resize passport photos, signatures, and ID photos to exact pixel dimensions and target file size.',
+    action: 'Resize & Compress',
+    multi: false, minFiles: 1,
+    accept: 'image/jpeg,image/png,image/webp,image/*',
+    color: '#0ea5e9', bg: '#e0f5ff',
+    options: `
+      <div class="opt">
+        <label class="opt-title" for="photoPreset">Preset (common form sizes)</label>
+        <select class="text-input" id="photoPreset">
+          <option value="">Custom size</option>
+          <option value="200x230" data-kb="50">📷 Passport photo — 200 × 230 px · 20–50 KB</option>
+          <option value="140x60"  data-kb="20">✍️ Signature — 140 × 60 px · 10–20 KB</option>
+          <option value="100x100" data-kb="20">ID photo — 100 × 100 px · 10–20 KB</option>
+          <option value="150x150" data-kb="50">Photo — 150 × 150 px · 20–50 KB</option>
+          <option value="200x200" data-kb="50">Photo — 200 × 200 px · 20–50 KB</option>
+          <option value="276x354" data-kb="50">Photo 3.5 × 4.5 cm — 276 × 354 px (@200 dpi)</option>
+          <option value="413x531" data-kb="100">Photo 3.5 × 4.5 cm — 413 × 531 px (@300 dpi)</option>
+          <option value="600x600" data-kb="200">Form photo — 600 × 600 px</option>
+          <option value="1000x1000" data-kb="500">Large photo — 1000 × 1000 px</option>
+          <option value="350x350" data-kb="100">Portal photo — 350 × 350 px</option>
+        </select>
+      </div>
+
+      <div class="opt">
+        <label class="opt-title">Dimensions (pixels)</label>
+        <div class="dim-row">
+          <div class="dfield"><label for="photoW">Width</label>
+            <input class="text-input" id="photoW" type="number" min="20" max="8000" value="200">
+          </div>
+          <div class="dfield"><label for="photoH">Height</label>
+            <input class="text-input" id="photoH" type="number" min="20" max="8000" value="230">
+          </div>
+        </div>
+        <label class="checkline" style="margin-top:10px"><input type="checkbox" id="photoLock" checked> Lock aspect ratio</label>
+      </div>
+
+      <div class="opt">
+        <label class="opt-title" for="photoTarget">Target file size</label>
+        <select class="text-input" id="photoTarget">
+          <option value="0">Best quality (no size limit)</option>
+          <option value="10">Under 10 KB</option>
+          <option value="20" selected>Under 20 KB</option>
+          <option value="30">Under 30 KB</option>
+          <option value="50">Under 50 KB</option>
+          <option value="100">Under 100 KB</option>
+          <option value="200">Under 200 KB</option>
+          <option value="500">Under 500 KB</option>
+          <option value="1024">Under 1 MB</option>
+        </select>
+        <p class="hint" id="photoTargetHint">The tool will lower quality and, if needed, downscale to fit the target.</p>
+      </div>
+
+      <div class="opt">
+        <label class="opt-title">Output format</label>
+        <div class="chip-row">
+          <label class="chip"><input type="radio" name="photoFmt" value="image/jpeg" checked><span>JPG</span></label>
+          <label class="chip"><input type="radio" name="photoFmt" value="image/png"><span>PNG</span></label>
+          <label class="chip"><input type="radio" name="photoFmt" value="image/webp"><span>WebP</span></label>
+        </div>
+      </div>
+
+      <div class="opt">
+        <label class="opt-title">Background (for transparent images)</label>
+        <div class="chip-row">
+          <label class="chip swatch"><input type="radio" name="photoBg" value="#ffffff" checked><span class="sw" style="background:#ffffff"></span><span>White</span></label>
+          <label class="chip swatch"><input type="radio" name="photoBg" value="#e5e7eb"><span class="sw" style="background:#e5e7eb"></span><span>Grey</span></label>
+          <label class="chip swatch"><input type="radio" name="photoBg" value="#dbeafe"><span class="sw" style="background:#dbeafe"></span><span>Blue</span></label>
+          <label class="chip swatch"><input type="radio" name="photoBg" value="#fef3c7"><span class="sw" style="background:#fef3c7"></span><span>Cream</span></label>
+        </div>
+      </div>
+
+      <div class="opt">
+        <label class="opt-title">Preview</label>
+        <div class="preview-grid">
+          <div class="pv-card">
+            <div class="pv-img" id="pvOriginal"><span style="font-size:.72rem;color:#9ca3af">Original</span></div>
+            <div class="pv-info" id="pvOriginalInfo">—</div>
+          </div>
+          <div class="pv-card">
+            <div class="pv-img" id="pvProcessed"><span style="font-size:.72rem;color:#9ca3af">Result</span></div>
+            <div class="pv-info" id="pvProcessedInfo">—</div>
+          </div>
+        </div>
+      </div>`
+  }
+};
+
+/* ==========================================================================
+   STATE
+   ========================================================================== */
+const state = {
+  toolKey: null,
+  items: [],
+  outputs: [],
+  busy: false
+};
+
+const overlay    = $('#overlay');
+const fileInput  = $('#fileInput');
+const dropzone   = $('#dropzone');
+const fileListEl = $('#filelist');
+const optionsEl  = $('#options');
+const runBtn     = $('#runBtn');
+const addMoreBtn = $('#addMore');
+const progressEl = $('#progress');
+const barFill    = $('#barFill');
+const pLabel     = $('#pLabel');
+const pPct       = $('#pPct');
+const resultEl   = $('#result');
+
+let photoPreviewTimer = null;
+
+/* ==========================================================================
+   LANDING PAGE
+   ========================================================================== */
+function renderToolCards() {
+  const grid = $('#toolGrid');
+  grid.innerHTML = Object.entries(TOOLS).map(([key, t]) => `
+    <button class="tool" data-tool="${key}" style="--tc:${t.color};--tbg:${t.bg}">
+      <div class="tool-ico">${ICONS[key]}</div>
+      <h3>${t.name}</h3>
+      <p>${t.desc}</p>
+      <div class="arrow">Select files
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+    </button>
+  `).join('');
+
+  $$('.tool', grid).forEach(btn =>
+    btn.addEventListener('click', () => openTool(btn.dataset.tool))
+  );
+}
+
+/* ==========================================================================
+   WORKSPACE
+   ========================================================================== */
+function openTool(key) {
+  const tool = TOOLS[key];
+  state.toolKey = key;
+  state.items = [];
+  state.outputs = [];
+
+  $('#wsIcon').innerHTML = ICONS[key];
+  $('#wsIcon').style.background = tool.bg;
+  $('#wsIcon').style.color = tool.color;
+  $('#wsName').textContent = tool.name;
+  $('#wsTag').textContent  = tool.tag;
+  runBtn.textContent = tool.action;
+
+  const accept = tool.accept || 'application/pdf,.pdf';
+  fileInput.accept   = accept;
+  fileInput.multiple = !!tool.multi;
+
+  if (tool.dzTitle) {
+    $('#dzTitle').textContent = tool.dzTitle;
+  } else {
+    const label = acceptLabel(accept);
+    $('#dzTitle').textContent = tool.multi
+      ? `Drop ${label} files here`
+      : `Drop a${label === 'image' ? 'n' : ''} ${label} file here`;
+  }
+
+  optionsEl.innerHTML = tool.options || '';
+
+  if (key === 'split')     bindSplitOptions();
+  if (key === 'merge')     $('#mergeSort')?.addEventListener('change', onMergeSortToggle);
+  if (key === 'photo')     bindPhotoOptions();
+
+  hideProgress();
+  hideResult();
+  renderFileList();
+  overlay.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeWorkspace() {
+  if (state.busy) return;
+  overlay.hidden = true;
+  document.body.style.overflow = '';
+  state.items = [];
+  state.outputs = [];
+  state.toolKey = null;
+  clearTimeout(photoPreviewTimer);
+}
+
+/* ---------- split-specific wiring ---------- */
+function bindSplitOptions() {
+  const specOpt   = $('#optSpec');
+  const everyOpt  = $('#optEvery');
+  const specLabel = $('#specLabel');
+  const specInput = $('#specInput');
+  const specHint  = $('#specHint');
+
+  function sync() {
+    const mode = $('input[name="splitmode"]:checked').value;
+    if (mode === 'every') {
+      specOpt.hidden = true;
+      everyOpt.hidden = false;
+    } else {
+      specOpt.hidden = false;
+      everyOpt.hidden = true;
+      if (mode === 'extract') {
+        specLabel.textContent = 'Pages to extract';
+        specInput.value = '1, 3, 5-7';
+        specInput.placeholder = 'e.g. 1, 3, 5-7';
+        specHint.textContent = 'All listed pages are combined into a single PDF.';
+      } else {
+        specLabel.textContent = 'Page ranges';
+        specInput.value = '1-1';
+        specInput.placeholder = 'e.g. 1-3, 5, 8-10';
+        specHint.textContent = 'Separate ranges with commas. Pages are numbered from 1.';
+      }
+    }
+    updateRunState();
+  }
+  $$('input[name="splitmode"]').forEach(r => r.addEventListener('change', sync));
+  sync();
+}
+
+function onMergeSortToggle(e) {
+  if (e.target.checked) {
+    state.items.sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+    );
+  }
+  renderFileList();
+}
+
+/* ==========================================================================
+   PHOTO OPTIONS WIRING
+   ========================================================================== */
+function bindPhotoOptions() {
+  const preset   = $('#photoPreset');
+  const wEl      = $('#photoW');
+  const hEl      = $('#photoH');
+  const lockEl   = $('#photoLock');
+  const target   = $('#photoTarget');
+  const hintEl   = $('#photoTargetHint');
+
+  let ratio = 200 / 230;
+
+  function readNum(el, fallback) {
+    const n = parseInt(el.value, 10);
+    return Number.isFinite(n) && n > 0 ? n : fallback;
+  }
+
+  preset.addEventListener('change', () => {
+    const v = preset.value;
+    if (!v) return;
+    const [w, h] = v.split('x').map(Number);
+    wEl.value = w; hEl.value = h;
+    ratio = w / h;
+
+    const opt = preset.selectedOptions[0];
+    const kb = parseInt(opt.dataset.kb || '0', 10);
+    if (kb > 0) {
+      const closest = [...target.options]
+        .map(o => ({ o, d: Math.abs(parseInt(o.value, 10) - kb) }))
+        .sort((a, b) => a.d - b.d)[0].o;
+      target.value = closest.value;
+    }
+    syncFormatUI();
+    schedulePreview();
+  });
+
+  wEl.addEventListener('input', () => {
+    if (lockEl.checked) {
+      const w = readNum(wEl, null);
+      if (w) hEl.value = Math.max(1, Math.round(w / ratio));
+    } else {
+      ratio = readNum(wEl, 1) / readNum(hEl, 1);
+    }
+    schedulePreview();
+  });
+  hEl.addEventListener('input', () => {
+    if (lockEl.checked) {
+      const h = readNum(hEl, null);
+      if (h) wEl.value = Math.max(1, Math.round(h * ratio));
+    } else {
+      ratio = readNum(wEl, 1) / readNum(hEl, 1);
+    }
+    schedulePreview();
+  });
+  lockEl.addEventListener('change', () => {
+    if (lockEl.checked) ratio = readNum(wEl, 1) / readNum(hEl, 1);
+  });
+
+  target.addEventListener('change', () => { syncFormatUI(); schedulePreview(); });
+  $$('input[name="photoFmt"]').forEach(r => r.addEventListener('change', () => {
+    syncFormatUI(); schedulePreview();
+  }));
+  $$('input[name="photoBg"]').forEach(r => r.addEventListener('change', schedulePreview));
+
+  function syncFormatUI() {
+    const fmt = $('input[name="photoFmt"]:checked').value;
+    const isPng = fmt === 'image/png';
+    target.disabled = isPng;
+    hintEl.textContent = isPng
+      ? 'PNG is lossless — target size is ignored. Pick JPG or WebP to control the file size.'
+      : 'The tool will lower quality and, if needed, downscale to fit the target.';
+  }
+
+  syncFormatUI();
+  schedulePreview();
+}
+
+/* ==========================================================================
+   PHOTO PREVIEW (live)
+   ========================================================================== */
+function schedulePreview() {
+  clearTimeout(photoPreviewTimer);
+  photoPreviewTimer = setTimeout(renderPhotoPreview, 160);
+}
+
+async function renderPhotoPreview() {
+  if (state.toolKey !== 'photo') return;
+  const pvOriginal  = $('#pvOriginal');
+  const pvProcessed = $('#pvProcessed');
+  const infoO       = $('#pvOriginalInfo');
+  const infoP       = $('#pvProcessedInfo');
+  if (!pvOriginal || !pvProcessed) return;
+
+  const item = state.items[0];
+  if (!item) {
+    pvOriginal.innerHTML  = '<span style="font-size:.72rem;color:#9ca3af">Original</span>';
+    pvProcessed.innerHTML = '<span style="font-size:.72rem;color:#9ca3af">Result</span>';
+    infoO.textContent = '—';
+    infoP.textContent = '—';
+    return;
+  }
+
+  if (!item._prevUrl) item._prevUrl = URL.createObjectURL(new Blob([item.bytes]));
+  pvOriginal.innerHTML = `<img src="${item._prevUrl}" alt="original">`;
+  infoO.innerHTML = `<b>Original</b>${item.dims ? item.dims.w + ' × ' + item.dims.h + ' px · ' : ''}${fmtSize(item.size)}`;
+
+  const w = parseInt($('#photoW').value, 10);
+  const h = parseInt($('#photoH').value, 10);
+  const targetKB = parseInt($('#photoTarget').value, 10) || 0;
+  const fmt = $('input[name="photoFmt"]:checked').value;
+  const bg  = $('input[name="photoBg"]:checked').value;
+
+  if (!w || !h || w < 20 || h < 20) {
+    pvProcessed.innerHTML = '<span style="font-size:.72rem;color:#9ca3af">Enter valid dimensions</span>';
+    infoP.textContent = '—';
+    return;
+  }
+
+  try {
+    const result = await processPhoto(item.bytes, { w, h, targetKB, fmt, bg });
+    if (!state.items[0]) return;
+    const url = URL.createObjectURL(new Blob([result.bytes], { type: fmt }));
+    pvProcessed.innerHTML = `<img src="${url}" alt="processed">`;
+    setTimeout(() => URL.revokeObjectURL(url), 8000);
+    const extLabel = fmt === 'image/jpeg' ? 'JPG' : fmt === 'image/png' ? 'PNG' : 'WebP';
+    infoP.innerHTML = `<b>Result · ${extLabel}</b>${result.w} × ${result.h} px · ${fmtSize(result.bytes.length)}`;
+  } catch (err) {
+    console.warn(err);
+    pvProcessed.innerHTML = '<span style="font-size:.72rem;color:#9ca3af">Preview failed</span>';
+    infoP.textContent = '—';
+  }
+}
+
+/* ==========================================================================
+   FILE HANDLING
+   ========================================================================== */
+async function addFiles(fileList) {
+  const tool = TOOLS[state.toolKey];
+  const accept = tool.accept || 'application/pdf,.pdf';
+
+  const files = [...fileList].filter(f => fileMatchesAccept(f, accept));
+  if (!files.length) {
+    toast(`Please choose ${acceptLabel(accept)} files only.`, true);
+    return;
+  }
+
+  if (!tool.multi) state.items = [];
+
+  for (const file of files) {
+    let buf;
+    try {
+      buf = new Uint8Array(await file.arrayBuffer());
+    } catch (err) {
+      toast(`Could not read "${file.name}".`, true);
+      continue;
+    }
+
+    const item = {
+      id: uid(),
+      name: file.name,
+      size: file.size,
+      bytes: buf,
+      pages: 0,
+      dims: null
+    };
+
+    if (isPdfFile(file.name, file.type) && PDFLibReady) {
+      try {
+        const doc = await PDFLib.PDFDocument.load(buf.slice(), { ignoreEncryption: true });
+        item.pages = doc.getPageCount();
+      } catch (err) {
+        console.warn('Could not read page count for', file.name, err);
+      }
+    } else if (isImageFile(file.name, file.type)) {
+      try {
+        item.dims = await getImageDimensions(buf);
+      } catch (err) {
+        console.warn('Could not read image dimensions for', file.name, err);
+      }
+    }
+
+    state.items.push(item);
+  }
+
+  if (!tool.multi && state.items.length > 1) {
+    state.items = [state.items[state.items.length - 1]];
+  }
+
+  hideResult();
+  renderFileList();
+}
+
+function removeItem(id) {
+  const item = state.items.find(i => i.id === id);
+  if (item && item._prevUrl) URL.revokeObjectURL(item._prevUrl);
+  state.items = state.items.filter(i => i.id !== id);
+  hideResult();
+  renderFileList();
+}
+
+function renderFileList() {
+  fileListEl.innerHTML = state.items.map((item, idx) => {
+    const ext = fileExtLabel(item.name);
+    const extLower = ext.toLowerCase();
+    const extClass = extLower === 'zip' ? ' zip'
+                    : ['jpg','jpeg','png','webp','gif','bmp'].includes(extLower) ? ' img'
+                    : ['xls','xlsx','csv'].includes(extLower) ? ' sheet'
+                    : '';
+    let sub;
+    if (item.pages) sub = `${item.pages} page${item.pages === 1 ? '' : 's'} · ${fmtSize(item.size)}`;
+    else if (item.dims) sub = `${item.dims.w} × ${item.dims.h} px · ${fmtSize(item.size)}`;
+    else sub = fmtSize(item.size);
+
+    return `
+    <div class="file-row" draggable="true" data-id="${item.id}" data-idx="${idx}">
+      <div class="grip" title="Drag to reorder">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+      </div>
+      <div class="file-ico${extClass}">${ext}</div>
+      <div class="file-meta">
+        <div class="nm" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
+        <div class="sub">${sub}</div>
+      </div>
+      <button class="rm" title="Remove" data-remove="${item.id}">✕</button>
+    </div>`;
+  }).join('');
+
+  $$('[data-remove]', fileListEl).forEach(btn =>
+    btn.addEventListener('click', () => removeItem(btn.dataset.remove))
+  );
+
+  let dragIdx = null;
+  $$('.file-row', fileListEl).forEach(row => {
+    row.addEventListener('dragstart', e => {
+      dragIdx = Number(row.dataset.idx);
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', String(dragIdx)); } catch (_) {}
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      $$('.file-row', fileListEl).forEach(r => r.classList.remove('over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      row.classList.add('over');
+    });
+    row.addEventListener('dragleave', () => row.classList.remove('over'));
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      row.classList.remove('over');
+      const from = dragIdx;
+      const to = Number(row.dataset.idx);
+      if (from === null || from === to) return;
+      const [moved] = state.items.splice(from, 1);
+      state.items.splice(to, 0, moved);
+      const sortChk = $('#mergeSort');
+      if (sortChk) sortChk.checked = false;
+      renderFileList();
+    });
+  });
+
+  updateRunState();
+  if (state.toolKey === 'photo') schedulePreview();
+}
+
+function updateRunState() {
+  const tool = TOOLS[state.toolKey];
+  if (!tool) return;
+
+  let enough = state.items.length >= (tool.minFiles || 1);
+
+  // excelSort needs at least one PDF AND one spreadsheet
+  if (state.toolKey === 'excelSort' && enough) {
+    const hasPdf   = state.items.some(i => isPdfFile(i.name, ''));
+    const hasSheet = state.items.some(i => isSheetFile(i.name));
+    enough = hasPdf && hasSheet;
+  }
+
+  runBtn.disabled = !enough || state.busy;
+}
+
+/* ==========================================================================
+   PROGRESS / RESULT UI
+   ========================================================================== */
+function showProgress(pct, label) {
+  progressEl.hidden = false;
+  barFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+  pPct.textContent = Math.round(pct) + '%';
+  if (label) pLabel.textContent = label;
+}
+function hideProgress() {
+  progressEl.hidden = true;
+  barFill.style.width = '0%';
+  pPct.textContent = '0%';
+  pLabel.textContent = 'Working…';
+}
+function showResult(title, subHtml, buttonLabel) {
+  $('#rTitle').textContent = title;
+  $('#rSub').innerHTML = subHtml;
+  $('#dlBtn').textContent = buttonLabel;
+  resultEl.hidden = false;
+}
+function hideResult() { resultEl.hidden = true; }
+
+/* ==========================================================================
+   RUN DISPATCH
+   ========================================================================== */
+async function run() {
+  if (state.busy) return;
+  const key = state.toolKey;
+  const tool = TOOLS[key];
+
+  if (state.items.length < (tool.minFiles || 1)) {
+    toast(`This tool needs at least ${tool.minFiles} file(s).`, true);
+    return;
+  }
+
+  state.busy = true;
+  updateRunState();
+  addMoreBtn.disabled = true;
+  hideResult();
+  showProgress(0, 'Starting…');
+  await tick();
+
+  try {
+    if (key === 'merge')            await runMerge();
+    else if (key === 'split')       await runSplit();
+    else if (key === 'compress')    await runCompress();
+    else if (key === 'sequence')    await runSequence();
+    else if (key === 'zipSequence') await runZipSequence();
+    else if (key === 'excelSort')   await runExcelSort();
+    else if (key === 'photo')       await runPhoto();
+    showProgress(100, 'Finished');
+    await tick();
+    setTimeout(hideProgress, 500);
+  } catch (err) {
+    console.error(err);
+    hideProgress();
+    toast(err.message || 'Something went wrong while processing.', true);
+  } finally {
+    state.busy = false;
+    addMoreBtn.disabled = false;
+    updateRunState();
+  }
+}
+
+/* ==========================================================================
+   TOOL 1 — MERGE
+   ========================================================================== */
+async function runMerge() {
+  const out = await PDFLib.PDFDocument.create();
+  const total = state.items.length;
+
+  for (let i = 0; i < total; i++) {
+    const item = state.items[i];
+    showProgress((i / total) * 92, `Merging “${item.name}”…`);
+    await tick();
+    const src = await PDFLib.PDFDocument.load(item.bytes.slice(), { ignoreEncryption: true });
+    const pages = await out.copyPages(src, src.getPageIndices());
+    pages.forEach(p => out.addPage(p));
+  }
+
+  showProgress(95, 'Writing final PDF…');
+  await tick();
+  const bytes = await out.save({ useObjectStreams: true });
+  const name = 'merged.pdf';
+  state.outputs = [{ name, bytes, mime: 'application/pdf' }];
+  presentSingleResult(bytes, name, state.items.reduce((a, i) => a + i.size, 0));
+}
+
+/* ==========================================================================
+   TOOL 2 — SPLIT
+   ========================================================================== */
+async function runSplit() {
+  const item = state.items[0];
+  const doc = await PDFLib.PDFDocument.load(item.bytes.slice(), { ignoreEncryption: true });
+  const totalPages = doc.getPageCount();
+  const baseName = item.name.replace(/\.pdf$/i, '');
+
+  if (totalPages === 0) throw new Error('This PDF has no pages.');
+
+  const mode = $('input[name="splitmode"]:checked').value;
+  let groups = [];
+
+  if (mode === 'ranges') {
+    groups = parseRanges($('#specInput').value, totalPages);
+    if (!groups.length) throw new Error('No valid page ranges found. Try “1-3, 5”.');
+  } else if (mode === 'every') {
+    const n = Math.max(1, parseInt($('#everyInput').value, 10) || 1);
+    for (let i = 0; i < totalPages; i += n) {
+      const arr = [];
+      for (let j = i; j < Math.min(i + n, totalPages); j++) arr.push(j);
+      groups.push(arr);
+    }
+  } else {
+    groups = parseRanges($('#specInput').value, totalPages);
+    if (!groups.length) throw new Error('No valid pages listed. Try “1, 3, 5-7”.');
+    groups = [groups.flat().sort((a, b) => a - b)];
+  }
+
+  groups = groups.map(g => [...new Set(g)]);
+
+  const outputs = [];
+  const totalGroups = groups.length;
+
+  for (let i = 0; i < totalGroups; i++) {
+    showProgress((i / totalGroups) * 90, `Building part ${i + 1} of ${totalGroups}…`);
+    await tick();
+    const newDoc = await PDFLib.PDFDocument.create();
+    const copied = await newDoc.copyPages(doc, groups[i]);
+    copied.forEach(p => newDoc.addPage(p));
+    const bytes = await newDoc.save({ useObjectStreams: true });
+
+    let label;
+    if (mode === 'extract') label = 'extracted';
+    else if (groups[i].length === 1) label = `page-${groups[i][0] + 1}`;
+    else label = `pages-${groups[i][0] + 1}-${groups[i][groups[i].length - 1] + 1}`;
+
+    outputs.push({ name: `${baseName}_${label}.pdf`, bytes, mime: 'application/pdf' });
+  }
+
+  showProgress(95, 'Packaging…');
+  await tick();
+  state.outputs = outputs;
+  presentMultiResult(outputs, `${baseName}_split.zip`, totalPages);
+}
+
+/* ==========================================================================
+   TOOL 3 — COMPRESS
+   ========================================================================== */
+async function runCompress() {
+  if (!pdfjsReady) throw new Error('The PDF renderer failed to load. Check your connection and refresh.');
+
+  const level = $('input[name="clevel"]:checked').value;
+  const grayscale = $('#grayChk').checked;
+
+  const presets = {
+    extreme:     { scale: 1.0,  quality: 0.45 },
+    recommended: { scale: 1.39, quality: 0.70 },
+    less:        { scale: 2.0,  quality: 0.85 }
+  };
+  const { scale, quality } = presets[level];
+
+  const item = state.items[0];
+  const originalSize = item.size;
+
+  const pdf = await pdfjsLib.getDocument({ data: item.bytes.slice() }).promise;
+  const numPages = pdf.numPages;
+
+  const out = await PDFLib.PDFDocument.create();
+  out.setProducer('PDFForge');
+  out.setCreator('PDFForge — client-side compressor');
+
+  const MAX_DIM = 4000;
+
+  for (let i = 1; i <= numPages; i++) {
+    showProgress(((i - 1) / numPages) * 92, `Compressing page ${i} of ${numPages}…`);
+    await tick();
+
+    const page = await pdf.getPage(i);
+    const baseVp = page.getViewport({ scale: 1 });
+
+    let s = scale;
+    const longest = Math.max(baseVp.width, baseVp.height);
+    if (longest * s > MAX_DIM) s = MAX_DIM / longest;
+
+    const vp = page.getViewport({ scale: s });
+    const canvas = document.createElement('canvas');
+    canvas.width  = Math.max(1, Math.floor(vp.width));
+    canvas.height = Math.max(1, Math.floor(vp.height));
+
+    const ctx = canvas.getContext('2d', { willReadFrequently: grayscale });
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+
+    if (grayscale) {
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imgData.data;
+      for (let p = 0; p < d.length; p += 4) {
+        const lum = (d[p] * 0.299 + d[p + 1] * 0.587 + d[p + 2] * 0.114) | 0;
+        d[p] = d[p + 1] = d[p + 2] = lum;
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+    const jpgBytes = dataUrlToBytes(dataUrl);
+    const embedded = await out.embedJpg(jpgBytes);
+
+    const newPage = out.addPage([baseVp.width, baseVp.height]);
+    newPage.drawImage(embedded, { x: 0, y: 0, width: baseVp.width, height: baseVp.height });
+
+    canvas.width = 0; canvas.height = 0;
+    page.cleanup();
+    await tick();
+  }
+
+  pdf.destroy();
+
+  showProgress(95, 'Writing compressed PDF…');
+  await tick();
+
+  const bytes = await out.save({ useObjectStreams: true });
+  const baseName = item.name.replace(/\.pdf$/i, '');
+  const name = `${baseName}_compressed.pdf`;
+
+  state.outputs = [{ name, bytes, mime: 'application/pdf' }];
+  presentSingleResult(bytes, name, originalSize);
+}
+
+/* ==========================================================================
+   TOOL 4 — MERGE IN SEQUENCE
+   ========================================================================== */
+async function runSequence() {
+  const groupSize = Math.max(1, parseInt($('#groupInput').value, 10) || 1);
+  const reverseOthers = $('#reverseChk').checked;
+
+  const docs = [];
+  for (let i = 0; i < state.items.length; i++) {
+    showProgress((i / state.items.length) * 25, `Reading “${state.items[i].name}”…`);
+    await tick();
+    docs.push(await PDFLib.PDFDocument.load(state.items[i].bytes.slice(), { ignoreEncryption: true }));
+  }
+
+  const pageLists = docs.map((doc, i) => {
+    const idx = doc.getPageIndices();
+    if (reverseOthers && i > 0) idx.reverse();
+    return idx;
+  });
+
+  const cursors = pageLists.map(() => 0);
+  const totalPages = pageLists.reduce((sum, list) => sum + list.length, 0);
+  const order = [];
+
+  while (order.length < totalPages) {
+    const before = order.length;
+    for (let d = 0; d < pageLists.length; d++) {
+      for (let k = 0; k < groupSize && cursors[d] < pageLists[d].length; k++) {
+        order.push([d, cursors[d]]);
+        cursors[d]++;
+      }
+    }
+    if (order.length === before) break;
+  }
+
+  showProgress(40, 'Assembling pages…');
+  await tick();
+
+  const out = await PDFLib.PDFDocument.create();
+  const copiedPages = [];
+  for (let d = 0; d < docs.length; d++) {
+    copiedPages[d] = await out.copyPages(docs[d], pageLists[d]);
+    showProgress(40 + ((d + 1) / docs.length) * 45, `Copying from file ${d + 1}…`);
+    await tick();
+  }
+
+  for (const [d, pos] of order) out.addPage(copiedPages[d][pos]);
+
+  showProgress(95, 'Writing final PDF…');
+  await tick();
+
+  const bytes = await out.save({ useObjectStreams: true });
+  const name = 'sequenced.pdf';
+
+  state.outputs = [{ name, bytes, mime: 'application/pdf' }];
+  presentSingleResult(bytes, name, state.items.reduce((a, i) => a + i.size, 0));
+}
+
+/* ==========================================================================
+   TOOL 5 — MERGE BY CSV SEQUENCE
+   ========================================================================== */
+async function runZipSequence() {
+  if (!zipReady) throw new Error('The ZIP library failed to load. Check your connection and refresh.');
+  if (!PDFLibReady) throw new Error('The PDF library failed to load. Check your connection and refresh.');
+
+  const zipItem    = state.items[0];
+  const csvName    = ($('#csvNameInput').value || '').trim() || 'invoice_status_report.csv';
+  const colName    = ($('#colNameInput').value || '').trim() || 'filepath';
+  const skipMissing = $('#skipMissingChk').checked;
+  const uniquePages = $('#uniquePagesChk').checked;
+
+  showProgress(2, 'Reading ZIP…');
+  await tick();
+
+  let zip;
+  try {
+    zip = await JSZip.loadAsync(zipItem.bytes);
+  } catch (err) {
+    throw new Error('Could not open the ZIP file. Make sure it is a valid archive.');
+  }
+
+  showProgress(6, 'Locating CSV inside ZIP…');
+  await tick();
+
+  const csvFile = findFileInZip(zip, csvName);
+  if (!csvFile) {
+    throw new Error(`CSV "${csvName}" not found inside the ZIP. Check the file name (paths & case are matched).`);
+  }
+
+  const csvText = await csvFile.async('text');
+  const rows = parseCSV(csvText);
+  if (!rows.length) throw new Error('The CSV is empty.');
+
+  const header = rows[0].map(h => String(h).trim());
+  const targetHeader = colName.toLowerCase();
+  const colIdx = header.findIndex(h => h.toLowerCase() === targetHeader);
+  if (colIdx < 0) {
+    throw new Error(`Column "${colName}" not found. Available columns: ${header.join(', ')}`);
+  }
+
+  const sequenceList = [];
+  for (let i = 1; i < rows.length; i++) {
+    const value = (rows[i][colIdx] || '').trim();
+    if (value) sequenceList.push(value);
+  }
+  if (!sequenceList.length) {
+    throw new Error(`No file paths found in column "${colName}".`);
+  }
+
+  showProgress(10, 'Indexing PDFs inside ZIP…');
+  await tick();
+
+  const pdfIndex = {};
+  zip.forEach((relativePath, file) => {
+    if (file.dir) return;
+    const norm = normalizePath(relativePath).toLowerCase();
+    if (norm.endsWith('.pdf')) pdfIndex[norm] = file;
+  });
+
+  const totalInZip = Object.keys(pdfIndex).length;
+  if (!totalInZip) throw new Error('No PDF files were found inside the ZIP.');
+
+  const out = await PDFLib.PDFDocument.create();
+  out.setProducer('PDFForge — CSV sequence merge');
+  out.setCreator('PDFForge');
+
+  const seen = new Set();
+  const missing = [];
+  const usedSources = [];
+  let addedPages = 0;
+  let addedFiles = 0;
+
+  const totalSeq = sequenceList.length;
+
+  for (let i = 0; i < totalSeq; i++) {
+    const rawPath = sequenceList[i];
+    const pct = 12 + ((i + 1) / totalSeq) * 80;
+    showProgress(pct, `Adding ${i + 1}/${totalSeq}: ${rawPath}`);
+    await tick();
+
+    const lookupKey = normalizePath(rawPath).toLowerCase();
+
+    if (uniquePages && seen.has(lookupKey)) {
+      usedSources.push({ path: rawPath, status: 'duplicate (skipped)' });
+      continue;
+    }
+
+    const zipEntry = findZipEntry(pdfIndex, rawPath);
+    if (!zipEntry) {
+      missing.push(rawPath);
+      usedSources.push({ path: rawPath, status: 'missing' });
+      if (!skipMissing) {
+        throw new Error(`Missing file in ZIP: "${rawPath}". Uncheck “Skip missing files” to ignore this, or fix the ZIP.`);
+      }
+      continue;
+    }
+
+    let srcBytes;
+    try {
+      srcBytes = await zipEntry.async('uint8array');
+    } catch (err) {
+      missing.push(rawPath);
+      usedSources.push({ path: rawPath, status: 'unreadable' });
+      if (!skipMissing) throw new Error(`Could not read "${rawPath}" from the ZIP.`);
+      continue;
+    }
+
+    try {
+      const srcDoc = await PDFLib.PDFDocument.load(srcBytes, { ignoreEncryption: true });
+      const pageIdx = srcDoc.getPageIndices();
+      const pages = await out.copyPages(srcDoc, pageIdx);
+      pages.forEach(p => out.addPage(p));
+      addedFiles++;
+      addedPages += pages.length;
+      seen.add(lookupKey);
+      usedSources.push({ path: rawPath, status: `ok (${pages.length} page${pages.length === 1 ? '' : 's'})` });
+    } catch (err) {
+      console.warn('Failed to merge', rawPath, err);
+      missing.push(rawPath);
+      usedSources.push({ path: rawPath, status: `error: ${err.message}` });
+      if (!skipMissing) throw new Error(`Could not read "${rawPath}" as a PDF: ${err.message}`);
+    }
+  }
+
+  if (!addedFiles) {
+    throw new Error('No PDFs could be merged. Check that the paths in your CSV match the files inside the ZIP.');
+  }
+
+  showProgress(95, 'Writing merged PDF…');
+  await tick();
+
+  const mergedBytes = await out.save({ useObjectStreams: true });
+  const outName = 'Merged_GST_Invoice.pdf';
+
+  state.outputs = [{ name: outName, bytes: mergedBytes, mime: 'application/pdf' }];
+
+  console.table(usedSources.slice(0, 500));
+
+  let sub = `${outName} · ${addedFiles} file${addedFiles === 1 ? '' : 's'} merged · ${addedPages} page${addedPages === 1 ? '' : 's'} · ${fmtSize(mergedBytes.length)}`;
+  if (missing.length) {
+    sub += ` — <span class="save">${missing.length} path${missing.length === 1 ? '' : 's'} not found</span>`;
+  }
+
+  showResult('Your merged invoice PDF is ready', sub, 'Download PDF');
+
+  if (missing.length) {
+    toast(`Merged ${addedFiles} of ${totalSeq}. Missing/skipped: ${missing.length}. See console for details.`, true);
+  } else {
+    toast(`Merged ${addedFiles} invoices in CSV order.`);
+  }
+}
+
+/* ==========================================================================
+   TOOL 6 — SORT PDF BY EXCEL (mirrors the Python script)
+   ========================================================================== */
+async function runExcelSort() {
+  if (!xlsxReady) throw new Error('The Excel library failed to load. Check your connection and refresh.');
+  if (!pdfjsReady) throw new Error('The PDF renderer failed to load. Check your connection and refresh.');
+  if (!PDFLibReady) throw new Error('The PDF library failed to load. Check your connection and refresh.');
+
+  const pdfItem   = state.items.find(i => isPdfFile(i.name, ''));
+  const sheetItem = state.items.find(i => isSheetFile(i.name));
+
+  if (!pdfItem)   throw new Error('Please upload a PDF file.');
+  if (!sheetItem) throw new Error('Please upload an Excel or CSV file.');
+
+  const columnName    = ($('#esColumnInput').value || '').trim() || 'Serial_Number';
+  const sheetName     = ($('#esSheetInput').value || '').trim();
+  const outputNameRaw = ($('#esOutputInput').value || '').trim() || 'Sorted_Invoices.pdf';
+  const outputName    = outputNameRaw.toLowerCase().endsWith('.pdf') ? outputNameRaw : outputNameRaw + '.pdf';
+  const skipMissing   = $('#esSkipMissing').checked;
+  const appendUnmatched = $('#esAppendUnmatched').checked;
+  const caseInsensitive = $('#esCaseInsensitive').checked;
+
+  /* ---- 1. Parse the spreadsheet ------------------------------------------ */
+  showProgress(4, 'Reading spreadsheet…');
+  await tick();
+
+  let wb;
+  try {
+    wb = XLSX.read(sheetItem.bytes, { type: 'array' });
+  } catch (err) {
+    throw new Error('Could not read the spreadsheet. Make sure it is a valid Excel or CSV file.');
+  }
+  if (!wb.SheetNames.length) throw new Error('No sheets found in the spreadsheet.');
+
+  const targetSheet = (sheetName && wb.SheetNames.includes(sheetName))
+    ? sheetName
+    : wb.SheetNames[0];
+  const ws = wb.Sheets[targetSheet];
+  if (!ws) throw new Error(`Sheet "${targetSheet}" not found.`);
+
+  const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+  if (!rows.length) throw new Error('The spreadsheet is empty.');
+
+  const header = rows[0].map(h => String(h).trim());
+  const targetHeader = columnName.toLowerCase();
+  const colIdx = header.findIndex(h => h.toLowerCase() === targetHeader);
+  if (colIdx < 0) {
+    throw new Error(`Column "${columnName}" not found. Available columns: ${header.join(', ')}`);
+  }
+
+  const sequenceList = [];
+  for (let i = 1; i < rows.length; i++) {
+    const v = String(rows[i][colIdx] ?? '').trim();
+    if (v) sequenceList.push(v);
+  }
+  if (!sequenceList.length) {
+    throw new Error(`No values found in column "${columnName}".`);
+  }
+
+  /* ---- 2. Extract text from every PDF page with pdf.js ------------------- */
+  showProgress(12, 'Loading PDF…');
+  await tick();
+
+  const pdf = await pdfjsLib.getDocument({ data: pdfItem.bytes.slice() }).promise;
+  const numPages = pdf.numPages;
+
+  const pageTexts = [];
+  for (let i = 1; i <= numPages; i++) {
+    const pct = 12 + (i / numPages) * 45;
+    showProgress(pct, `Extracting text — page ${i} of ${numPages}…`);
+    await tick();
+
+    const page = await pdf.getPage(i);
+    const tc = await page.getTextContent();
+    const items = tc.items.map(it => it.str || '');
+    const spaced = items.join(' ');
+    const compact = items.join('');
+    pageTexts.push({
+      spaced:  caseInsensitive ? spaced.toLowerCase()  : spaced,
+      compact: caseInsensitive ? compact.toLowerCase() : compact,
+      spacedRaw: spaced
+    });
+    page.cleanup();
+  }
+  pdf.destroy();
+
+  /* ---- 3. Match each spreadsheet value to a PDF page --------------------- */
+  showProgress(60, 'Matching pages…');
+  await tick();
+
+  const usedPages = new Set();
+  const matched   = []; // { id, pageIdx }
+  const unmatched = []; // ids from spreadsheet with no page
+
+  for (const id of sequenceList) {
+    const needleSpaced  = caseInsensitive ? id.toLowerCase() : id;
+    const needleCompact = (caseInsensitive ? id.toLowerCase() : id).replace(/\s+/g, '');
+
+    let found = -1;
+    for (let p = 0; p < pageTexts.length; p++) {
+      if (usedPages.has(p)) continue;
+      const t = pageTexts[p];
+      if (t.spaced.includes(needleSpaced) ||
+          (needleCompact.length > 0 && t.compact.includes(needleCompact))) {
+        found = p;
+        break;
+      }
+    }
+
+    if (found >= 0) {
+      usedPages.add(found);
+      matched.push({ id, pageIdx: found });
+    } else {
+      unmatched.push(id);
+      if (!skipMissing) {
+        throw new Error(`ID "${id}" from the spreadsheet was not found in any PDF page. Uncheck “Skip IDs not found” to ignore this.`);
+      }
+    }
+  }
+
+  if (!matched.length) {
+    throw new Error('No pages could be matched. Check the column name and confirm the PDF has selectable text (not a scanned image).');
+  }
+
+  /* ---- 4. Build the sorted PDF ------------------------------------------ */
+  showProgress(78, 'Building sorted PDF…');
+  await tick();
+
+  const src = await PDFLib.PDFDocument.load(pdfItem.bytes.slice(), { ignoreEncryption: true });
+  const out = await PDFLib.PDFDocument.create();
+  out.setProducer('PDFForge — Excel sequence sort');
+  out.setCreator('PDFForge');
+
+  for (const m of matched) {
+    const [p] = await out.copyPages(src, [m.pageIdx]);
+    out.addPage(p);
+  }
+
+  let appendedCount = 0;
+  if (appendUnmatched) {
+    for (let p = 0; p < pageTexts.length; p++) {
+      if (usedPages.has(p)) continue;
+      const [page] = await out.copyPages(src, [p]);
+      out.addPage(page);
+      appendedCount++;
+    }
+  }
+
+  showProgress(95, 'Writing output…');
+  await tick();
+
+  const bytes = await out.save({ useObjectStreams: true });
+  state.outputs = [{ name: outputName, bytes, mime: 'application/pdf' }];
+
+  // Detailed console log so the user can verify
+  console.table(matched.map((m, i) => ({ order: i + 1, id: m.id, sourcePage: m.pageIdx + 1 })));
+  if (unmatched.length) console.warn('Unmatched IDs:', unmatched);
+
+  let sub = `${outputName} · ${matched.length} page${matched.length === 1 ? '' : 's'} matched · ${fmtSize(bytes.length)}`;
+  if (unmatched.length) {
+    sub += ` — <span class="save">${unmatched.length} ID${unmatched.length === 1 ? '' : 's'} not found</span>`;
+  }
+  if (appendUnmatched && appendedCount > 0) {
+    sub += ` · ${appendedCount} extra page${appendedCount === 1 ? '' : 's'} appended`;
+  }
+
+  showResult('Your sorted PDF is ready', sub, 'Download PDF');
+
+  if (unmatched.length) {
+    toast(`Sorted ${matched.length} of ${sequenceList.length} entries. ${unmatched.length} not found — see console.`, true);
+  } else {
+    toast(`Sorted ${matched.length} pages by “${columnName}”.`);
+  }
+}
+
+/* ==========================================================================
+   TOOL 7 — PHOTO RESIZE & COMPRESS
+   ========================================================================== */
+async function runPhoto() {
+  const item = state.items[0];
+  const w = parseInt($('#photoW').value, 10);
+  const h = parseInt($('#photoH').value, 10);
+  const targetKB = parseInt($('#photoTarget').value, 10) || 0;
+  const fmt = $('input[name="photoFmt"]:checked').value;
+  const bg  = $('input[name="photoBg"]:checked').value;
+
+  if (!w || !h || w < 20 || h < 20 || w > 8000 || h > 8000) {
+    throw new Error('Please enter valid dimensions between 20 and 8000 pixels.');
+  }
+
+  showProgress(15, 'Loading image…');
+  await tick();
+
+  const result = await processPhoto(item.bytes, { w, h, targetKB, fmt, bg });
+
+  showProgress(95, 'Encoding…');
+  await tick();
+
+  const ext = fmt === 'image/png' ? 'png' : fmt === 'image/webp' ? 'webp' : 'jpg';
+  const baseName = item.name.replace(/\.[^.]+$/, '');
+  const name = `${baseName}_${result.w}x${result.h}.${ext}`;
+
+  state.outputs = [{ name, bytes: result.bytes, mime: fmt }];
+
+  const original = item.size;
+  let sub = `${result.w} × ${result.h} px · ${fmtSize(result.bytes.length)} · ${ext.toUpperCase()}`;
+  if (targetKB > 0 && result.bytes.length <= targetKB * 1024) {
+    sub += ` — <span class="save">✓ under ${targetKB} KB</span>`;
+  } else if (targetKB > 0) {
+    sub += ` — <span class="save">couldn't reach ${targetKB} KB, using best effort</span>`;
+  } else if (original > result.bytes.length) {
+    const saved = Math.round((1 - result.bytes.length / original) * 100);
+    sub += ` — <span class="save">${saved}% smaller</span> than ${fmtSize(original)}`;
+  }
+
+  showResult('Your photo is ready', sub, `Download ${ext.toUpperCase()}`);
+}
+
+async function processPhoto(srcBytes, opts) {
+  const { w, h, targetKB, fmt, bg } = opts;
+  const img = await loadImage(srcBytes);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  ctx.fillStyle = bg || '#ffffff';
+  ctx.fillRect(0, 0, w, h);
+
+  const scale = Math.max(w / img.width, h / img.height);
+  const dw = img.width * scale;
+  const dh = img.height * scale;
+  const dx = (w - dw) / 2;
+  const dy = (h - dh) / 2;
+  ctx.drawImage(img, dx, dy, dw, dh);
+
+  const encoded = await encodeToTarget(canvas, fmt, targetKB);
+  return { bytes: encoded.bytes, w: encoded.w, h: encoded.h };
+}
+
+async function encodeToTarget(canvas, mime, targetKB) {
+  const supportsQuality = mime === 'image/jpeg' || mime === 'image/webp';
+  const w = canvas.width, h = canvas.height;
+
+  if (!supportsQuality || !targetKB || targetKB <= 0) {
+    const q = supportsQuality ? 0.92 : undefined;
+    const blob = await canvasToBlob(canvas, mime, q);
+    return { bytes: new Uint8Array(await blob.arrayBuffer()), w, h };
+  }
+
+  const targetBytes = targetKB * 1024;
+  const MIN_Q = 0.30;
+  const MAX_Q = 0.95;
+
+  let bestBlob = null;
+  let lo = MIN_Q, hi = MAX_Q;
+  for (let i = 0; i < 9; i++) {
+    const mid = (lo + hi) / 2;
+    const blob = await canvasToBlob(canvas, mime, mid);
+    if (blob.size <= targetBytes) { bestBlob = blob; lo = mid; }
+    else { hi = mid; }
+  }
+
+  if (bestBlob) {
+    return { bytes: new Uint8Array(await bestBlob.arrayBuffer()), w, h };
+  }
+
+  let s = 0.9;
+  while (s > 0.30) {
+    const nw = Math.max(20, Math.round(w * s));
+    const nh = Math.max(20, Math.round(h * s));
+    const c2 = document.createElement('canvas');
+    c2.width = nw; c2.height = nh;
+    const cx = c2.getContext('2d');
+    cx.imageSmoothingEnabled = true;
+    cx.imageSmoothingQuality = 'high';
+    cx.fillStyle = '#ffffff';
+    cx.fillRect(0, 0, nw, nh);
+    cx.drawImage(canvas, 0, 0, nw, nh);
+
+    const probe = await canvasToBlob(c2, mime, MIN_Q);
+    if (probe.size <= targetBytes) {
+      let lo2 = MIN_Q, hi2 = MAX_Q, best2 = probe;
+      for (let i = 0; i < 7; i++) {
+        const mid = (lo2 + hi2) / 2;
+        const b2 = await canvasToBlob(c2, mime, mid);
+        if (b2.size <= targetBytes) { best2 = b2; lo2 = mid; }
+        else { hi2 = mid; }
+      }
+      return { bytes: new Uint8Array(await best2.arrayBuffer()), w: nw, h: nh };
+    }
+    s -= 0.1;
+  }
+
+  const fallback = await canvasToBlob(canvas, mime, MIN_Q);
+  return { bytes: new Uint8Array(await fallback.arrayBuffer()), w, h };
+}
+
+/* ==========================================================================
+   RESULT PRESENTATION
+   ========================================================================== */
+function presentSingleResult(bytes, name, originalSize) {
+  const newSize = bytes.length;
+  let sub = `${name} · ${fmtSize(newSize)}`;
+  if (originalSize && originalSize > 0 && newSize < originalSize) {
+    const saved = Math.round((1 - newSize / originalSize) * 100);
+    sub += ` — <span class="save">${saved}% smaller</span> than ${fmtSize(originalSize)}`;
+  } else if (originalSize && newSize > originalSize) {
+    sub += ` — original was ${fmtSize(originalSize)}`;
+  }
+  showResult('Your file is ready', sub, 'Download');
+}
+
+function presentMultiResult(outputs, zipName, sourcePages) {
+  const totalBytes = outputs.reduce((a, o) => a + o.bytes.length, 0);
+  const sub = outputs.length === 1
+    ? `${outputs[0].name} · ${fmtSize(totalBytes)}`
+    : `${outputs.length} files · ${fmtSize(totalBytes)} total — downloaded as a ZIP archive`;
+  showResult('Your PDFs are ready', sub, outputs.length === 1 ? 'Download PDF' : 'Download ZIP');
+}
+
+async function downloadResults() {
+  const outputs = state.outputs;
+  if (!outputs.length) return;
+
+  if (outputs.length === 1) {
+    const o = outputs[0];
+    const mime = o.mime || 'application/pdf';
+    downloadBlob(new Blob([o.bytes], { type: mime }), o.name);
+    return;
+  }
+
+  if (!zipReady) {
+    for (const o of outputs) {
+      downloadBlob(new Blob([o.bytes], { type: o.mime || 'application/pdf' }), o.name);
+      await new Promise(r => setTimeout(r, 350));
+    }
+    return;
+  }
+
+  const zip = new JSZip();
+  outputs.forEach(o => zip.file(o.name, o.bytes));
+  const blob = await zip.generateAsync({ type: 'blob' });
+  downloadBlob(blob, 'pdfforge_split.zip');
+}
+
+/* ==========================================================================
+   EVENT WIRING
+   ========================================================================== */
+function initEvents() {
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropzone.classList.add('over');
+  });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('over'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('over');
+    if (e.dataTransfer.files?.length) addFiles(e.dataTransfer.files);
+  });
+
+  ['dragover', 'drop'].forEach(evt =>
+    window.addEventListener(evt, e => {
+      if (overlay.hidden) return;
+      if (!e.target.closest('#dropzone')) e.preventDefault();
+    })
+  );
+
+  fileInput.addEventListener('change', e => {
+    if (e.target.files?.length) addFiles(e.target.files);
+    fileInput.value = '';
+  });
+
+  addMoreBtn.addEventListener('click', () => fileInput.click());
+  runBtn.addEventListener('click', run);
+  $('#dlBtn').addEventListener('click', downloadResults);
+  $('#closeWs').addEventListener('click', closeWorkspace);
+
+  overlay.addEventListener('mousedown', e => {
+    if (e.target === overlay) closeWorkspace();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !overlay.hidden) closeWorkspace();
+  });
+
+  $('#yr').textContent = new Date().getFullYear();
+}
+
+/* ==========================================================================
+   BOOT
+   ========================================================================== */
+(function boot() {
+  if (!PDFLibReady) toast('PDF library failed to load. Please check your internet connection.', true);
+  if (!zipReady)   toast('ZIP library failed to load. Please check your internet connection.', true);
+  if (!xlsxReady)  toast('Excel library failed to load. Please check your internet connection.', true);
+  renderToolCards();
+  initEvents();
+})();
+</script>
+</body>
+</html>
